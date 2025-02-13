@@ -42,15 +42,8 @@ ws.on("connection", (socket, request) => {
 
         socket.on("message", async (data) => {
             const parseData = JSON.parse(data as unknown as string);
-            console.log(parseData)
-            console.log("you send the message ")
             // push the user into User array with socke and roomId
             if (parseData.type === "JOIN") {
-
-                setInterval(() => {
-                    socket.send("hello")
-                }, 2000)
-                console.log("joined ")
                 const verifyData = WsJoinSchema.safeParse(parseData)
                 if (!verifyData.success) return;
 
@@ -68,23 +61,23 @@ ws.on("connection", (socket, request) => {
             if (parseData.type === "CHAT") {
                 const verifyData = WsChatSchema.safeParse(parseData);
                 if (!verifyData.success) return;
-                console.log("message recived chat")
                 // add the message to database
                 await Client.strokes.create({
                     data: {
-                        stroke: verifyData.data.payload.message,
+                        stroke: `${verifyData.data.payload.message}`,
                         userId: decodedToken.id,
                         roomId: verifyData.data.payload.roomId,
                     }
                 })
 
                 // logic to send data except the sender
+
                 Users.forEach(user => {
-                    if (user.userId === decodedToken.id) return;
                     if (user.roomId.includes(verifyData.data.payload.roomId)) {
                         // send the data
                         user.socket.send(JSON.stringify({
-                            message: verifyData.data.payload.message
+                            type: "CHAT",
+                            stroke: verifyData.data.payload.message
                         }))
                     }
 

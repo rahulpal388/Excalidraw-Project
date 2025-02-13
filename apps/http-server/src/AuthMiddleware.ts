@@ -10,7 +10,6 @@ interface IRequestBody {
 
 export default function AuthMiddleware(req: Request, res: Response, next: NextFunction) {
     const token = req.headers.token;
-
     if (!token) {
         res.status(404).json({
             messsage: "token is undefine"

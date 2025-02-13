@@ -156,9 +156,8 @@ app.get("/create/room", AuthMiddleware, async (req, res) => {
 })
 
 
-app.get("/strokes", AuthMiddleware, async (req, res) => {
+app.post("/strokes", AuthMiddleware, async (req, res) => {
     const payload = StrokeSchema.safeParse(req.body);
-
     if (!payload.success) {
         res.status(404).json({
             message: "invalid formate"
@@ -168,24 +167,24 @@ app.get("/strokes", AuthMiddleware, async (req, res) => {
 
     try {
         console.log(payload.data.roomname)
-        await Client.room.findFirst({
-            where: {
-                roomname: payload.data.roomname
-            }
-        }).then(async (data) => {
-            if (!data) return;
-            console.log(data)
-            const response = await Client.strokes.findMany({
-                where: {
-                    roomId: data.id
-                }
-            })
-            console.log(response)
+        // await Client.room.findFirst({
+        //     where: {
+        //         roomname: payload.data.roomname
+        //     }
+        // }).then(async (data) => {
+        //     if (!data) return;
+        //     console.log(data)
+        //     const response = await Client.strokes.findMany({
+        //         where: {
+        //             roomId: data.id
+        //         }
+        //     })
 
-            res.status(200).json({
-                strokes: response
-            })
+
+        res.status(200).json({
+            strokes: []
         })
+        // })
 
     } catch (error) {
         if (error) {
