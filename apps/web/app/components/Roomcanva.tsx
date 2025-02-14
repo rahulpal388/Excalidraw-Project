@@ -11,8 +11,6 @@ export function RoomCanva({ roomId }: {
     useEffect(() => {
         const ws = new WebSocket(`${WS_BACKEND}/?token=${Token}`)
 
-        // console.log(socketRef.current)
-
         // when ws is connected the add ws to socketRef 
         ws.onopen = () => {
             console.log("websocket connected")

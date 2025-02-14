@@ -1,14 +1,18 @@
 "use client"
-import React, { JSX, ReactNode, RefObject, useEffect, useRef } from "react"
-import { initDraw } from "../draw"
-import circleIcon from "../../public/circle.svg"
-import rectangleIcon from "../../public/rectangle.svg"
+import React, { RefObject, SetStateAction, useEffect, useRef, useState } from "react"
+import { initDraw } from "../drawCanvas"
 import { CircleIcon, CursorIcon, RectangleIcon } from "../IconsSvgs/IconSvgs"
+import { ArrowRightIcon } from "lucide-react"
+import { ToolBarItems } from "./toolBarItems"
+import { resizeShape } from "../drawCanvas/resizeShape"
+import { mainFunction, setExistingShapeFunction } from "../drawCanvas/getShapes"
 
 
 export interface IShapeType {
-    type: "cursor" | "rect" | "circle"
+    type: "pointer" | "rect" | "circle" | "pencile" | "line" | "resize"
 }
+
+export type IAction = "draw" | "resize"
 
 export function MainCanva({ roomId, socket }: {
     roomId: string,
@@ -16,48 +20,53 @@ export function MainCanva({ roomId, socket }: {
 }) {
     const canvaRef = useRef<HTMLCanvasElement>(null);
     const shapeTypeRef = useRef<IShapeType>({
-        type: "cursor"
+        type: "resize"
     })
 
-    // console.log(shapeTypeRef.current.type)
+    useEffect(() => {
+        setExistingShapeFunction();
+    }, [])
     useEffect(() => {
         if (canvaRef.current) {
-            initDraw(canvaRef.current, roomId, socket, canvaRef.current, shapeTypeRef.current)
+            initDraw(roomId, socket, canvaRef.current, shapeTypeRef.current)
+
         }
 
     }, [canvaRef])
     return <div>
-        <ToolBar shapeTypeRef={shapeTypeRef} />
-        <canvas ref={canvaRef} height={600} width={1250}></canvas>
+        <ToolBar shapeType={shapeTypeRef.current} />
+        <canvas className="" ref={canvaRef} height={600} width={1250}></canvas>
+
     </div>
 }
 
 
-function ToolBar({ shapeTypeRef }: {
-    shapeTypeRef: RefObject<IShapeType>,
+function ToolBar({ shapeType }: {
+    shapeType: IShapeType
 }) {
-
-    return <div className="absolute left-96 top-4 w-96 h-[2.5rem] bg-[#232329] rounded py-1 px-4  ">
+    const [selectedTool, setSelectedTool] = useState<IShapeType>({ type: "pointer" })
+    return <div className="absolute left-96  top-4 w-96 h-[2.5rem] bg-[#232329] rounded py-1 px-4  ">
         <div className="flex items-center gap-3">
-            <ToolBarItems children={<CursorIcon />} onClick={() => {
-                shapeTypeRef.current.type = "cursor"
+            <ToolBarItems active={shapeType.type === "resize"} children={<CursorIcon />} onClick={() => {
+                shapeType.type = "resize"
+                setSelectedTool({ type: "resize" })
+
             }} />
-            <ToolBarItems children={<RectangleIcon />} onClick={() => {
-                shapeTypeRef.current.type = "rect"
+            <ToolBarItems active={shapeType.type === "rect"} children={<RectangleIcon />} onClick={() => {
+                shapeType.type = "rect"
+                setSelectedTool({ type: "rect" })
             }} />
-            <ToolBarItems children={<CircleIcon />} onClick={() => {
-                shapeTypeRef.current.type = "circle"
+            <ToolBarItems active={shapeType.type === "circle"} children={<CircleIcon />} onClick={() => {
+                shapeType.type = "circle"
+                setSelectedTool({ type: "circle" })
+            }} />
+            <ToolBarItems active={shapeType.type === "line"} children={<ArrowRightIcon className="text-white h-5 " />} onClick={() => {
+                shapeType.type = "line"
+                setSelectedTool({ type: "line" })
             }} />
         </div>
     </div>
 }
 
-function ToolBarItems({ children, onClick }: {
-    children: ReactNode,
-    onClick: () => void,
-}) {
-    return <div onClick={onClick} className={`rounded active:bg-[#403E6A]  hover:bg-[#31303B] w-8 h-8 flex justify-center items-center cursor-pointer p-2 `}>
-        {children}
 
-    </div>
-}
+

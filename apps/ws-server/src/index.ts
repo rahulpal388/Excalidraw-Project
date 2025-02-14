@@ -62,13 +62,13 @@ ws.on("connection", (socket, request) => {
                 const verifyData = WsChatSchema.safeParse(parseData);
                 if (!verifyData.success) return;
                 // add the message to database
-                await Client.strokes.create({
-                    data: {
-                        stroke: `${verifyData.data.payload.message}`,
-                        userId: decodedToken.id,
-                        roomId: verifyData.data.payload.roomId,
-                    }
-                })
+                // await Client.strokes.create({
+                //     data: {
+                //         stroke: `${verifyData.data.payload.message}`,
+                //         userId: decodedToken.id,
+                //         roomId: verifyData.data.payload.roomId,
+                //     }
+                // })
 
                 // logic to send data except the sender
 
