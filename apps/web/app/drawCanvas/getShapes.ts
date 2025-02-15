@@ -1,9 +1,5 @@
 import axios from "axios";
 import { HTTP_BACKEND, Token } from "../../config";
-import { initDraw } from ".";
-import { RefObject } from "react";
-import { IAction, IShapeType } from "../components/MainCanva";
-import { resizeShape } from "./resizeShape";
 
 
 export type Shapes = {
@@ -17,7 +13,8 @@ export type Shapes = {
     type: "circle",
     startX: number,
     startY: number,
-    radius: number,
+    radiusX: number,
+    radiusY: number,
     display: boolean
 } | {
     type: "line",
@@ -26,21 +23,13 @@ export type Shapes = {
     endX: number,
     endY: number,
     display: boolean
+} | {
+    type: "dimond",
+    startX: number,
+    startY: number,
+    distance: number,
+    display: boolean
 }
-
-let exsistingShapes: Shapes[] = [];
-
-export async function setExistingShapeFunction() {
-    exsistingShapes = await getExistingStrokes("chats")
-}
-
-
-export function mainFunction(canvaRef: RefObject<HTMLCanvasElement | null>, roomId: string, socket: WebSocket, shapeTypeRef: RefObject<IShapeType>, action: IAction, isResize: boolean) {
-
-
-}
-
-
 
 
 export async function getExistingStrokes(roomname: string) {

@@ -1,15 +1,13 @@
 "use client"
-import React, { RefObject, SetStateAction, useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { initDraw } from "../drawCanvas"
 import { CircleIcon, CursorIcon, RectangleIcon } from "../IconsSvgs/IconSvgs"
-import { ArrowRightIcon } from "lucide-react"
+import { ArrowRightIcon, DiamondIcon } from "lucide-react"
 import { ToolBarItems } from "./toolBarItems"
-import { resizeShape } from "../drawCanvas/resizeShape"
-import { mainFunction, setExistingShapeFunction } from "../drawCanvas/getShapes"
 
 
 export interface IShapeType {
-    type: "pointer" | "rect" | "circle" | "pencile" | "line" | "resize"
+    type: "pointer" | "rect" | "circle" | "pencile" | "line" | "resize" | "dimond "
 }
 
 export type IAction = "draw" | "resize"
@@ -24,9 +22,6 @@ export function MainCanva({ roomId, socket }: {
     })
 
     useEffect(() => {
-        setExistingShapeFunction();
-    }, [])
-    useEffect(() => {
         if (canvaRef.current) {
             initDraw(roomId, socket, canvaRef.current, shapeTypeRef.current)
 
@@ -35,7 +30,7 @@ export function MainCanva({ roomId, socket }: {
     }, [canvaRef])
     return <div>
         <ToolBar shapeType={shapeTypeRef.current} />
-        <canvas className="" ref={canvaRef} height={600} width={1250}></canvas>
+        <canvas className="" ref={canvaRef} height={window.innerHeight} width={window.innerWidth}></canvas>
 
     </div>
 }
@@ -63,6 +58,10 @@ function ToolBar({ shapeType }: {
             <ToolBarItems active={shapeType.type === "line"} children={<ArrowRightIcon className="text-white h-5 " />} onClick={() => {
                 shapeType.type = "line"
                 setSelectedTool({ type: "line" })
+            }} />
+            <ToolBarItems active={shapeType.type === "dimond "} children={<DiamondIcon className="text-white h-5 " />} onClick={() => {
+                shapeType.type = "dimond "
+                setSelectedTool({ type: "dimond " })
             }} />
         </div>
     </div>

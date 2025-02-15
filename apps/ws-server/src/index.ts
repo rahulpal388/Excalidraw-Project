@@ -72,17 +72,17 @@ ws.on("connection", (socket, request) => {
 
                 // logic to send data except the sender
 
-                Users.forEach(user => {
-                    if (user.roomId.includes(verifyData.data.payload.roomId)) {
-                        // send the data
-                        user.socket.send(JSON.stringify({
-                            type: "CHAT",
-                            stroke: verifyData.data.payload.message
-                        }))
-                    }
+                // Users.forEach(user => {
+                //     if (user.roomId.includes(verifyData.data.payload.roomId)) {
+                //         // send the data
+                //         user.socket.send(JSON.stringify({
+                //             type: "CHAT",
+                //             stroke: verifyData.data.payload.message
+                //         }))
+                //     }
 
 
-                })
+                // })
             }
 
 

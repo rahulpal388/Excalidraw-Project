@@ -1,7 +1,13 @@
-import { clearCanvas } from ".";
+
 import { IAction, IShapeType } from "../components/MainCanva";
+import { circle } from "../drawShape/circle";
+import { dimond } from "../drawShape/dimond";
+import { line } from "../drawShape/line";
+import { rectangle } from "../drawShape/rectangle";
+import { clearCanvas } from "./clearCanva";
 import { Shapes } from "./getShapes";
-import { resizeShape } from "./resizeShape";
+import { selectShape } from "./selectShape";
+import { markSelecteShape } from "./markSelectedShape";
 
 
 
@@ -25,12 +31,15 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
         startY = e.clientY
 
 
+
+
+
     })
     canvas.addEventListener("mousemove", (e) => {
 
         if (shapeType.type === "resize") {
             canvas.style.cursor = "default";
-            resizeShape(canvas, existingShapes, ctx, e.clientX, e.clientY, selectedShape)
+            selectShape(canvas, existingShapes, ctx, e.clientX, e.clientY, selectedShape)
         } else {
             canvas.style.cursor = "crosshair";
         }
@@ -41,28 +50,26 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 const height = e.clientY - startY;
                 const width = e.clientX - startX
                 clearCanvas(existingShapes, ctx, canvas)
-                ctx.strokeStyle = "rgba(225,225,225)"
-                ctx.strokeRect(startX, startY, width, height)
+                rectangle(startX, startY, width, height, "rgb(211, 211, 211)", ctx)
+
 
             }
             if (shapeType.type === "circle") {
-                const radius = Math.abs(e.clientX - startX);
+                const radiusX = Math.abs(e.clientX - startX);
+                const radiusY = Math.abs(e.clientY - startY);
                 clearCanvas(existingShapes, ctx, canvas)
-                ctx.beginPath();
-                ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
-                ctx.stroke();
+                circle(startX, startY, radiusX, radiusY, ctx)
             }
+
             if (shapeType.type === "line") {
-                const length = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2));
-
                 clearCanvas(existingShapes, ctx, canvas)
-                ctx.beginPath();
-                ctx.moveTo(startX, startY)
+                line(startX, startY, e.clientX, e.clientY, ctx)
+            }
 
-                ctx.lineTo(e.clientX, e.clientY)
-                ctx.stroke();
-
-                ctx.closePath();
+            if (shapeType.type === "dimond ") {
+                const d = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2))
+                clearCanvas(existingShapes, ctx, canvas)
+                dimond(startX, startY, d, "rgb(211, 211, 211)", ctx)
             }
 
         }
@@ -74,11 +81,12 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
         clicked = false
         const height = e.clientY - startY;
         const width = e.clientX - startX;
-        const radius = Math.abs(e.clientX - startX);
+        const radiusX = Math.abs(e.clientX - startX);
+        const radiusY = Math.abs(e.clientY - startY);
 
         if (shapeType.type === "resize") {
             if (!selectedShape.length) return;
-            console.log(selectedShape[0])
+            markSelecteShape(canvas, ctx, selectedShape, existingShapes)
         };
 
         let shape: Shapes
@@ -105,10 +113,18 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 type: "circle",
                 startX,
                 startY,
-                radius,
+                radiusX,
+                radiusY,
                 display: true
             }
             existingShapes.push(shape)
+            // socket.send(JSON.stringify({
+            //     type: "CHAT",
+            //     payload: {
+            //         message: JSON.stringify(shape),
+            //         roomId: Number(roomId)
+            //     }
+            // }))
         }
 
         if (shapeType.type === "line") {
@@ -121,7 +137,31 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 display: true
             }
             existingShapes.push(shape)
-
+            // socket.send(JSON.stringify({
+            //     type: "CHAT",
+            //     payload: {
+            //         message: JSON.stringify(shape),
+            //         roomId: Number(roomId)
+            //     }
+            // }))
+        }
+        if (shapeType.type === "dimond ") {
+            const distance = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2))
+            shape = {
+                type: "dimond",
+                startX,
+                startY,
+                distance,
+                display: true
+            }
+            existingShapes.push(shape)
+            // socket.send(JSON.stringify({
+            //     type: "CHAT",
+            //     payload: {
+            //         message: JSON.stringify(shape),
+            //         roomId: Number(roomId)
+            //     }
+            // }))
         }
 
 
