@@ -1,8 +1,6 @@
 
-import { on } from "events";
 import { Shapes } from "./getShapes";
 import { findDistance } from "./findDistance";
-import { dimond } from "../drawShape/dimond";
 
 
 

@@ -1,4 +1,3 @@
-import { DiamondMinus } from "lucide-react"
 import { circle } from "../drawShape/circle"
 import { line } from "../drawShape/line"
 import { rectangle } from "../drawShape/rectangle"

@@ -10,7 +10,6 @@ export interface IShapeType {
     type: "pointer" | "rect" | "circle" | "pencile" | "line" | "resize" | "dimond "
 }
 
-export type IAction = "draw" | "resize"
 
 export function MainCanva({ roomId, socket }: {
     roomId: string,
@@ -22,15 +21,22 @@ export function MainCanva({ roomId, socket }: {
     })
 
     useEffect(() => {
-        if (canvaRef.current) {
-            initDraw(roomId, socket, canvaRef.current, shapeTypeRef.current)
+        window.scrollTo({ left: 5000, top: 5000, behavior: "smooth" })
+    }, [])
 
+    useEffect(() => {
+        if (canvaRef.current) {
+
+            initDraw(roomId, socket, canvaRef.current, shapeTypeRef.current)
         }
 
     }, [canvaRef])
-    return <div>
+
+
+
+    return <div className="w-max h-max scroll-smooth">
         <ToolBar shapeType={shapeTypeRef.current} />
-        <canvas className="" ref={canvaRef} height={window.innerHeight} width={window.innerWidth}></canvas>
+        <canvas className="overflow-auto  overscroll-contain " ref={canvaRef} height={10000} width={10000}  ></canvas>
 
     </div>
 }
@@ -40,7 +46,7 @@ function ToolBar({ shapeType }: {
     shapeType: IShapeType
 }) {
     const [selectedTool, setSelectedTool] = useState<IShapeType>({ type: "pointer" })
-    return <div className="absolute left-96  top-4 w-96 h-[2.5rem] bg-[#232329] rounded py-1 px-4  ">
+    return <div className="fixed left-96  top-4  w-96 h-[2.5rem] bg-[#232329] rounded py-1 px-4  ">
         <div className="flex items-center gap-3">
             <ToolBarItems active={shapeType.type === "resize"} children={<CursorIcon />} onClick={() => {
                 shapeType.type = "resize"

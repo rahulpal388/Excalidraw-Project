@@ -80,8 +80,6 @@ ws.on("connection", (socket, request) => {
                 //             stroke: verifyData.data.payload.message
                 //         }))
                 //     }
-
-
                 // })
             }
 

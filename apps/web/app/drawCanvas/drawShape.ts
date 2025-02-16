@@ -1,13 +1,13 @@
 
-import { IAction, IShapeType } from "../components/MainCanva";
-import { circle } from "../drawShape/circle";
-import { dimond } from "../drawShape/dimond";
-import { line } from "../drawShape/line";
+import { IShapeType } from "../components/MainCanva";
 import { rectangle } from "../drawShape/rectangle";
 import { clearCanvas } from "./clearCanva";
 import { Shapes } from "./getShapes";
 import { selectShape } from "./selectShape";
 import { markSelecteShape } from "./markSelectedShape";
+import { circle } from "../drawShape/circle";
+import { line } from "../drawShape/line";
+import { dimond } from "../drawShape/dimond";
 
 
 
@@ -19,7 +19,6 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
     socket: WebSocket,
     roomId: string,
 }) {
-    // if (action === "resize") return;
     let clicked = false;
     let startX = 0;
     let startY = 0;
@@ -27,19 +26,17 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
 
     canvas.addEventListener("mousedown", (e) => {
         clicked = true
-        startX = e.clientX;
-        startY = e.clientY
-
-
-
-
-
+        startX = e.clientX + Math.ceil(window.scrollX)
+        startY = e.clientY + Math.ceil(window.scrollY)
     })
+
     canvas.addEventListener("mousemove", (e) => {
+        const clientX = e.clientX + Math.ceil(window.scrollX)
+        const clientY = e.clientY + Math.ceil(window.scrollY)
 
         if (shapeType.type === "resize") {
             canvas.style.cursor = "default";
-            selectShape(canvas, existingShapes, ctx, e.clientX, e.clientY, selectedShape)
+            selectShape(canvas, existingShapes, ctx, clientX, clientY, selectedShape)
         } else {
             canvas.style.cursor = "crosshair";
         }
@@ -47,27 +44,26 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
 
         if (clicked) {
             if (shapeType.type === "rect") {
-                const height = e.clientY - startY;
-                const width = e.clientX - startX
+                const height = (clientY) - startY;
+                const width = (clientX) - startX
                 clearCanvas(existingShapes, ctx, canvas)
                 rectangle(startX, startY, width, height, "rgb(211, 211, 211)", ctx)
-
-
             }
+
             if (shapeType.type === "circle") {
-                const radiusX = Math.abs(e.clientX - startX);
-                const radiusY = Math.abs(e.clientY - startY);
+                const radiusX = Math.abs(clientX - startX);
+                const radiusY = Math.abs(clientY - startY);
                 clearCanvas(existingShapes, ctx, canvas)
                 circle(startX, startY, radiusX, radiusY, ctx)
             }
 
             if (shapeType.type === "line") {
                 clearCanvas(existingShapes, ctx, canvas)
-                line(startX, startY, e.clientX, e.clientY, ctx)
+                line(startX, startY, clientX, clientY, ctx)
             }
 
             if (shapeType.type === "dimond ") {
-                const d = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2))
+                const d = Math.sqrt(Math.pow(clientX - startX, 2) + Math.pow(clientY - startY, 2))
                 clearCanvas(existingShapes, ctx, canvas)
                 dimond(startX, startY, d, "rgb(211, 211, 211)", ctx)
             }
@@ -76,13 +72,11 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
 
 
     })
-    canvas.addEventListener("mouseup", (e) => {
 
+    canvas.addEventListener("mouseup", (e) => {
         clicked = false
-        const height = e.clientY - startY;
-        const width = e.clientX - startX;
-        const radiusX = Math.abs(e.clientX - startX);
-        const radiusY = Math.abs(e.clientY - startY);
+        const clientX = e.clientX + Math.ceil(window.scrollX)
+        const clientY = e.clientY + Math.ceil(window.scrollY)
 
         if (shapeType.type === "resize") {
             if (!selectedShape.length) return;
@@ -91,6 +85,8 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
 
         let shape: Shapes
         if (shapeType.type === "rect") {
+            const height = clientY - startY;
+            const width = clientX - startX
             shape = {
                 type: "rect",
                 startX,
@@ -100,15 +96,17 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 display: true
             }
             existingShapes.push(shape)
-            // socket.send(JSON.stringify({
-            //     type: "CHAT",
-            //     payload: {
-            //         message: JSON.stringify(shape),
-            //         roomId: Number(roomId)
-            //     }
-            // }))
+            socket.send(JSON.stringify({
+                type: "CHAT",
+                payload: {
+                    message: JSON.stringify(shape),
+                    roomId: Number(roomId)
+                }
+            }))
         }
         if (shapeType.type === "circle") {
+            const radiusX = Math.abs(clientX - startX);
+            const radiusY = Math.abs(clientY - startY);
             shape = {
                 type: "circle",
                 startX,
@@ -118,13 +116,13 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 display: true
             }
             existingShapes.push(shape)
-            // socket.send(JSON.stringify({
-            //     type: "CHAT",
-            //     payload: {
-            //         message: JSON.stringify(shape),
-            //         roomId: Number(roomId)
-            //     }
-            // }))
+            socket.send(JSON.stringify({
+                type: "CHAT",
+                payload: {
+                    message: JSON.stringify(shape),
+                    roomId: Number(roomId)
+                }
+            }))
         }
 
         if (shapeType.type === "line") {
@@ -132,8 +130,8 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 type: "line",
                 startX,
                 startY,
-                endX: e.clientX,
-                endY: e.clientY,
+                endX: clientX,
+                endY: clientY,
                 display: true
             }
             existingShapes.push(shape)
@@ -146,7 +144,7 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
             // }))
         }
         if (shapeType.type === "dimond ") {
-            const distance = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2))
+            const distance = Math.sqrt(Math.pow(clientX - startX, 2) + Math.pow(clientY - startY, 2))
             shape = {
                 type: "dimond",
                 startX,
@@ -155,13 +153,13 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 display: true
             }
             existingShapes.push(shape)
-            // socket.send(JSON.stringify({
-            //     type: "CHAT",
-            //     payload: {
-            //         message: JSON.stringify(shape),
-            //         roomId: Number(roomId)
-            //     }
-            // }))
+            socket.send(JSON.stringify({
+                type: "CHAT",
+                payload: {
+                    message: JSON.stringify(shape),
+                    roomId: Number(roomId)
+                }
+            }))
         }
 
 
