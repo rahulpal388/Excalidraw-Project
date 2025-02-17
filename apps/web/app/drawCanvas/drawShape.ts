@@ -23,11 +23,13 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
     let startX = 0;
     let startY = 0;
     let selectedShape: Shapes[] = [];
+    let deleteShape: Shapes[] = [];
 
     canvas.addEventListener("mousedown", (e) => {
         clicked = true
         startX = e.clientX + Math.ceil(window.scrollX)
         startY = e.clientY + Math.ceil(window.scrollY)
+        console.log(!selectedShape[0])
     })
 
     canvas.addEventListener("mousemove", (e) => {
@@ -36,7 +38,13 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
 
         if (shapeType.type === "resize") {
             canvas.style.cursor = "default";
-            selectShape(canvas, existingShapes, ctx, clientX, clientY, selectedShape)
+            selectedShape.length = 0
+            selectShape(canvas, existingShapes, ctx, clientX, clientY, selectedShape, "move")
+        } else if (shapeType.type === "erase") {
+            canvas.style.cursor = "none";
+            clearCanvas(existingShapes, ctx, canvas)
+            circle(clientX, clientY, 5, 5, "rgb(211, 211, 211)", ctx)
+            selectShape(canvas, existingShapes, ctx, clientX, clientY, deleteShape, "none")
         } else {
             canvas.style.cursor = "crosshair";
         }
@@ -54,12 +62,12 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 const radiusX = Math.abs(clientX - startX);
                 const radiusY = Math.abs(clientY - startY);
                 clearCanvas(existingShapes, ctx, canvas)
-                circle(startX, startY, radiusX, radiusY, ctx)
+                circle(startX, startY, radiusX, radiusY, "rgb(211, 211, 211)", ctx)
             }
 
             if (shapeType.type === "line") {
                 clearCanvas(existingShapes, ctx, canvas)
-                line(startX, startY, clientX, clientY, ctx)
+                line(startX, startY, clientX, clientY, "rgb(211, 211, 211)", ctx)
             }
 
             if (shapeType.type === "dimond ") {
@@ -68,6 +76,8 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 dimond(startX, startY, d, "rgb(211, 211, 211)", ctx)
             }
 
+            if (shapeType.type === "erase") {
+            }
         }
 
 
@@ -77,11 +87,22 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
         clicked = false
         const clientX = e.clientX + Math.ceil(window.scrollX)
         const clientY = e.clientY + Math.ceil(window.scrollY)
+        console.log(deleteShape)
 
         if (shapeType.type === "resize") {
-            if (!selectedShape.length) return;
+            if (!selectedShape[0]) return;
             markSelecteShape(canvas, ctx, selectedShape, existingShapes)
+
         };
+
+        if (shapeType.type === "erase") {
+            existingShapes = existingShapes.filter(shape => {
+                deleteShape.forEach(x => {
+                    shape !== x
+                })
+            })
+            clearCanvas(existingShapes, ctx, canvas)
+        }
 
         let shape: Shapes
         if (shapeType.type === "rect") {
@@ -93,6 +114,7 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 startY,
                 height,
                 width,
+                strokeStyle: "rgb(211, 211, 211)",
                 display: true
             }
             existingShapes.push(shape)
@@ -113,6 +135,7 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 startY,
                 radiusX,
                 radiusY,
+                strokeStyle: "rgb(211, 211, 211)",
                 display: true
             }
             existingShapes.push(shape)
@@ -132,6 +155,7 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 startY,
                 endX: clientX,
                 endY: clientY,
+                strokeStyle: "rgb(211, 211, 211)",
                 display: true
             }
             existingShapes.push(shape)
@@ -150,6 +174,7 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 startX,
                 startY,
                 distance,
+                strokeStyle: "rgb(211, 211, 211)",
                 display: true
             }
             existingShapes.push(shape)
@@ -167,5 +192,12 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
 
 
     })
+
+    canvas.addEventListener("mouseleave", (e) => {
+        if (shapeType.type === "erase") {
+            clearCanvas(existingShapes, ctx, canvas)
+        }
+    })
+
 
 }

@@ -9,7 +9,7 @@ import { Shapes } from "./getShapes";
 export function markSelecteShape(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, selectedShape: Shapes[], existingShapes: Shapes[]) {
     selectedShape.map(x => {
         clearCanvas(existingShapes, ctx, canvas)
-        ctx.strokeStyle = "rgb(0, 0, 255)"
+
         if (x.type === "rect") {
             mark(x.startX - 10, x.startY - 10, x.width + 4, x.height + 4, ctx)
         }
@@ -20,9 +20,9 @@ export function markSelecteShape(canvas: HTMLCanvasElement, ctx: CanvasRendering
             mark(x.startX - (x.distance / 2) - 4, x.startY - 4, x.distance - 5, x.distance - 5, ctx)
         }
         if (x.type === "line") {
-            circle(x.startX, x.startY, 5, 5, ctx)
-            circle((x.startX + x.endX) / 2, (x.startY + x.endY) / 2, 5, 5, ctx)
-            circle(x.endX, x.endY, 5, 5, ctx)
+            circle(x.startX, x.startY, 5, 5, "rgb(0, 0, 255)", ctx)
+            circle((x.startX + x.endX) / 2, (x.startY + x.endY) / 2, 5, 5, "rgb(0, 0, 255)", ctx)
+            circle(x.endX, x.endY, 5, 5, "rgb(0, 0, 255)", ctx)
         }
     })
 }
@@ -38,13 +38,13 @@ function mark(startX: number, startY: number, l1: number, l2: number, ctx: Canva
 
     const strokeStyle = "rgb(0, 0, 255)"
 
-    circle(startX + midLength, startY - 25, 5, 5, ctx)
+    circle(startX + midLength, startY - 25, 5, 5, strokeStyle, ctx)
     rectangle(startX, startY, width, height, strokeStyle, ctx)
-    line(startX + width, startY + (height / 2), startX + width + l1, startY + height / 2, ctx)
+    line(startX + width, startY + (height / 2), startX + width + l1, startY + height / 2, strokeStyle, ctx)
     rectangle(startX + width + l1, startY, width, height, strokeStyle, ctx)
-    line(startX + width + l1 + (width / 2), startY + height, startX + width + l1 + (width / 2), startY + width + l2, ctx)
+    line(startX + width + l1 + (width / 2), startY + height, startX + width + l1 + (width / 2), startY + width + l2, "rgb(0, 0, 255)", ctx)
     rectangle(startX + width + l1, startY + width + l2, width, height, strokeStyle, ctx)
-    line(startX + width + l1, startY + width + l2 + (width / 2), startX + width, startY + height + l2 + (height / 2), ctx)
+    line(startX + width + l1, startY + width + l2 + (width / 2), startX + width, startY + height + l2 + (height / 2), "rgb(0, 0, 255)", ctx)
     rectangle(startX, startY + height + l2, width, height, strokeStyle, ctx)
-    line(startX + (width / 2), startY + height + l2, startX + (width / 2), startY + height, ctx)
+    line(startX + (width / 2), startY + height + l2, startX + (width / 2), startY + height, "rgb(0, 0, 255)", ctx)
 }

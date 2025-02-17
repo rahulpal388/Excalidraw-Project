@@ -2,12 +2,12 @@
 import React, { useEffect, useRef, useState } from "react"
 import { initDraw } from "../drawCanvas"
 import { CircleIcon, CursorIcon, RectangleIcon } from "../IconsSvgs/IconSvgs"
-import { ArrowRightIcon, DiamondIcon } from "lucide-react"
+import { ArrowRightIcon, DiamondIcon, EraserIcon } from "lucide-react"
 import { ToolBarItems } from "./toolBarItems"
 
 
 export interface IShapeType {
-    type: "pointer" | "rect" | "circle" | "pencile" | "line" | "resize" | "dimond "
+    type: "pointer" | "rect" | "circle" | "pencile" | "line" | "resize" | "dimond " | "erase"
 }
 
 
@@ -68,6 +68,10 @@ function ToolBar({ shapeType }: {
             <ToolBarItems active={shapeType.type === "dimond "} children={<DiamondIcon className="text-white h-5 " />} onClick={() => {
                 shapeType.type = "dimond "
                 setSelectedTool({ type: "dimond " })
+            }} />
+            <ToolBarItems active={shapeType.type === "erase"} children={<EraserIcon className="text-white h-5 " />} onClick={() => {
+                shapeType.type = "erase"
+                setSelectedTool({ type: "erase" })
             }} />
         </div>
     </div>

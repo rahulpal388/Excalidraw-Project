@@ -8,6 +8,7 @@ export type Shapes = {
     startY: number;
     height: number;
     width: number,
+    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)"
     display: boolean
 } | {
     type: "circle",
@@ -15,6 +16,7 @@ export type Shapes = {
     startY: number,
     radiusX: number,
     radiusY: number,
+    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)"
     display: boolean
 } | {
     type: "line",
@@ -22,12 +24,14 @@ export type Shapes = {
     startY: number,
     endX: number,
     endY: number,
+    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)"
     display: boolean
 } | {
     type: "dimond",
     startX: number,
     startY: number,
     distance: number,
+    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)"
     display: boolean
 }
 

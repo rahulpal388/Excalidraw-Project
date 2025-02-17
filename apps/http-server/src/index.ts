@@ -16,6 +16,11 @@ const saltRound = 12;
 app.use(express.json())
 app.use(cors())
 
+
+app.get("/", (req, res) => {
+    res.send("message recived")
+})
+
 app.post("/signup", async (req, res) => {
     const payload = CreateUserSchema.safeParse(req.body);
 

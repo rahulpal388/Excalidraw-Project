@@ -12,16 +12,16 @@ export function clearCanvas(existingShapes: Shapes[], ctx: CanvasRenderingContex
 
     existingShapes.map(shape => {
         if (shape.type === "rect" && shape.display) {
-            rectangle(shape.startX, shape.startY, shape.width, shape.height, "rgb(211, 211, 211)", ctx)
+            rectangle(shape.startX, shape.startY, shape.width, shape.height, shape.strokeStyle, ctx)
         }
         if (shape.type === "circle" && shape.display) {
-            circle(shape.startX, shape.startY, shape.radiusX, shape.radiusY, ctx)
+            circle(shape.startX, shape.startY, shape.radiusX, shape.radiusY, shape.strokeStyle, ctx)
         }
         if (shape.type === "line" && shape.display) {
-            line(shape.startX, shape.startY, shape.endX, shape.endY, ctx)
+            line(shape.startX, shape.startY, shape.endX, shape.endY, shape.strokeStyle, ctx)
         }
         if (shape.type === "dimond") {
-            dimond(shape.startX, shape.startY, shape.distance, "rgb(211, 211, 211)", ctx)
+            dimond(shape.startX, shape.startY, shape.distance, shape.strokeStyle, ctx)
         }
     })
 
