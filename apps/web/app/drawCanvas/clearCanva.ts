@@ -23,6 +23,21 @@ export function clearCanvas(existingShapes: Shapes[], ctx: CanvasRenderingContex
         if (shape.type === "dimond") {
             dimond(shape.startX, shape.startY, shape.distance, shape.strokeStyle, ctx)
         }
+        if (shape.type === "text" && shape.display) {
+            console.log("called")
+            ctx.font = `16px sans-serif`
+            ctx.fillStyle = "white"
+            ctx.fillText(shape.text, shape.x, shape.y + 5)
+        }
+        if (shape.type === "pencile" && shape.display) {
+            ctx.beginPath()
+            ctx.moveTo(shape.startX, shape.startY)
+            shape.endDimension.map(x => {
+                ctx.lineTo(x.endX, x.endY)
+                ctx.stroke()
+            })
+
+        }
     })
 
 }

@@ -5,7 +5,7 @@ import { getExistingStrokes, Shapes } from "./getShapes";
 
 
 
-export async function initDraw(roomId: string, socket: WebSocket, canvas: HTMLCanvasElement, shapeType: IShapeType) {
+export async function initDraw(roomId: string, socket: WebSocket, canvas: HTMLCanvasElement, shapeType: IShapeType, textAreaRef: HTMLTextAreaElement) {
 
     let existingShapes: Shapes[] = await getExistingStrokes("chats")
 
@@ -23,8 +23,9 @@ export async function initDraw(roomId: string, socket: WebSocket, canvas: HTMLCa
         }
     }
 
+
     clearCanvas(existingShapes, ctx, canvas);
-    drawShape({ canvas, ctx, shapeType, existingShapes, socket, roomId })
+    drawShape({ canvas, ctx, shapeType, existingShapes, socket, roomId, textAreaRef })
 
 }
 

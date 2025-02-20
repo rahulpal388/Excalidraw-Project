@@ -2,7 +2,7 @@
 import { IShapeType } from "../components/MainCanva";
 import { rectangle } from "../drawShape/rectangle";
 import { clearCanvas } from "./clearCanva";
-import { Shapes } from "./getShapes";
+import { IPencileEndDimension, Shapes } from "./getShapes";
 import { selectShape } from "./selectShape";
 import { markSelecteShape } from "./markSelectedShape";
 import { circle } from "../drawShape/circle";
@@ -10,26 +10,36 @@ import { line } from "../drawShape/line";
 import { dimond } from "../drawShape/dimond";
 
 
-
-export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, roomId }: {
+export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, roomId, textAreaRef }: {
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     shapeType: IShapeType,
     existingShapes: Shapes[],
     socket: WebSocket,
     roomId: string,
+    textAreaRef: HTMLTextAreaElement
 }) {
     let clicked = false;
     let startX = 0;
     let startY = 0;
+    let x = 0;
+    let y = 0;
     let selectedShape: Shapes[] = [];
     let deleteShape: Shapes[] = [];
+    let pencileArray: IPencileEndDimension[] = []
 
     canvas.addEventListener("mousedown", (e) => {
         clicked = true
         startX = e.clientX + Math.ceil(window.scrollX)
         startY = e.clientY + Math.ceil(window.scrollY)
-        console.log(!selectedShape[0])
+
+        if (shapeType.type === "pencile") {
+            ctx.beginPath()
+            ctx.moveTo(startX, startY)
+        }
+
+
+
     })
 
     canvas.addEventListener("mousemove", (e) => {
@@ -76,8 +86,12 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
                 dimond(startX, startY, d, "rgb(211, 211, 211)", ctx)
             }
 
-            if (shapeType.type === "erase") {
+            if (shapeType.type === "pencile") {
+                ctx.lineTo(clientX, clientY)
+                ctx.stroke()
+                pencileArray.push({ endX: clientX, endY: clientY })
             }
+
         }
 
 
@@ -87,7 +101,7 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
         clicked = false
         const clientX = e.clientX + Math.ceil(window.scrollX)
         const clientY = e.clientY + Math.ceil(window.scrollY)
-        console.log(deleteShape)
+
 
         if (shapeType.type === "resize") {
             if (!selectedShape[0]) return;
@@ -187,9 +201,33 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
             }))
         }
 
+        if (shapeType.type === "text") {
+            textAreaRef.style.display = "none"
+            shape = {
+                type: "text",
+                x,
+                y,
+                textSize: 24,
+                text: textAreaRef.value,
+                display: true
 
+            }
+            console.log(textAreaRef.value)
+            existingShapes.push(shape)
+            clearCanvas(existingShapes, ctx, canvas)
 
+        }
 
+        if (shapeType.type === "pencile") {
+            shape = {
+                type: "pencile",
+                startX,
+                startY,
+                endDimension: pencileArray,
+                display: true
+            }
+            existingShapes.push(shape)
+        }
 
     })
 
@@ -199,5 +237,19 @@ export function drawShape({ canvas, ctx, shapeType, existingShapes, socket, room
         }
     })
 
+
+
+
+    canvas.addEventListener("dblclick", (e) => {
+        if (shapeType.type === "text") {
+            x = e.clientX + Math.ceil(window.scrollX)
+            y = e.clientY + Math.ceil(window.scrollY) + 24 / 2
+            textAreaRef.style.display = "block";
+            textAreaRef.value = ""
+            textAreaRef.focus();
+            textAreaRef.style.top = `${e.clientY}px`
+            textAreaRef.style.left = `${e.clientX}px`
+        }
+    })
 
 }

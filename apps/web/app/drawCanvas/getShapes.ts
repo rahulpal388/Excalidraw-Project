@@ -1,6 +1,10 @@
 import axios from "axios";
 import { HTTP_BACKEND, Token } from "../../config";
 
+export interface IPencileEndDimension {
+    endX: number,
+    endY: number,
+}
 
 export type Shapes = {
     type: "rect",
@@ -32,6 +36,19 @@ export type Shapes = {
     startY: number,
     distance: number,
     strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)"
+    display: boolean
+} | {
+    type: "text",
+    x: number,
+    y: number,
+    textSize: number,
+    text: string,
+    display: boolean
+} | {
+    type: "pencile",
+    startX: number,
+    startY: number,
+    endDimension: IPencileEndDimension[],
     display: boolean
 }
 
