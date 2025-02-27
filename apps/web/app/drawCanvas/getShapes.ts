@@ -12,7 +12,8 @@ export type Shapes = {
     startY: number;
     height: number;
     width: number,
-    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)"
+    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    selected: boolean,
     display: boolean
 } | {
     type: "circle",
@@ -20,7 +21,8 @@ export type Shapes = {
     startY: number,
     radiusX: number,
     radiusY: number,
-    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)"
+    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    selected: boolean,
     display: boolean
 } | {
     type: "line",
@@ -28,14 +30,16 @@ export type Shapes = {
     startY: number,
     endX: number,
     endY: number,
-    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)"
+    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    selected: boolean,
     display: boolean
 } | {
     type: "dimond",
     startX: number,
     startY: number,
     distance: number,
-    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)"
+    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    selected: boolean,
     display: boolean
 } | {
     type: "text",
@@ -43,12 +47,16 @@ export type Shapes = {
     y: number,
     textSize: number,
     text: string,
+    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    selected: boolean,
     display: boolean
 } | {
     type: "pencile",
     startX: number,
     startY: number,
     endDimension: IPencileEndDimension[],
+    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    selected: boolean,
     display: boolean
 }
 

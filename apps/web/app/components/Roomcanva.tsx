@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
 import { Token, WS_BACKEND } from "../../config"
-import { MainCanva } from "./MainCanva"
+import { MainCanva } from "./MainComponent"
 
 export function RoomCanva({ roomId }: {
     roomId: string
@@ -35,5 +35,6 @@ export function RoomCanva({ roomId }: {
 
     return <div>
         <MainCanva roomId={roomId} socket={socket} />
+
     </div>
 }

@@ -2,7 +2,7 @@ import { Shapes } from "../drawCanvas/getShapes";
 
 
 
-export function onCircleShape(shape: Shapes, clientX: number, clientY: number, onClick: () => void) {
+export function onCircleShape(shape: Shapes, clientX: number, clientY: number, where: "outside" | "inside" | "both"): boolean {
     if (shape.type === "circle") {
         const radiusX = Math.ceil(shape.radiusX)
         const radiusY = Math.ceil(shape.radiusY)
@@ -10,13 +10,16 @@ export function onCircleShape(shape: Shapes, clientX: number, clientY: number, o
         const eq2 = Math.pow(clientY - shape.startY, 2) / Math.pow(radiusY + 4, 2)
         const eq3 = Math.pow(clientX - shape.startX, 2) / Math.pow(radiusX - 4, 2)
         const eq4 = Math.pow(clientY - shape.startY, 2) / Math.pow(radiusY - 4, 2)
-        const onInnerCircle = eq3 + eq4 > 1
-        const onOuterCircle = eq1 + eq2 < 1
+        const outsideCircle = eq3 + eq4 > 1
+        const insideCircle = eq1 + eq2 < 1
 
-        if (onInnerCircle && onOuterCircle) {
-            onClick()
+        const onCircle = where === "both" ? outsideCircle && insideCircle : where === "inside" ? insideCircle : outsideCircle
+
+        if (onCircle) {
+            return true
         }
     }
+    return false
 
 
 }

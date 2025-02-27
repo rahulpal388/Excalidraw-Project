@@ -1,15 +1,17 @@
+
 import { circle } from "../drawShape/circle";
+import { dimond } from "../drawShape/dimond";
 import { line } from "../drawShape/line";
 import { rectangle } from "../drawShape/rectangle";
-import { clearCanvas } from "./clearCanva";
+import { isRectangleShape } from "../selectShapeFunctions/rectangleShape";
+import { IActionType } from "./drawShape";
 import { Shapes } from "./getShapes";
 
 
 
-export function markSelecteShape(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, selectedShape: Shapes[], existingShapes: Shapes[]) {
-    selectedShape.map(x => {
-        clearCanvas(existingShapes, ctx, canvas)
+export function markSelectedShape(ctx: CanvasRenderingContext2D, selectedShape: Shapes[]) {
 
+    selectedShape.map(x => {
         if (x.type === "rect") {
             mark(x.startX - 10, x.startY - 10, x.width + 4, x.height + 4, ctx)
         }

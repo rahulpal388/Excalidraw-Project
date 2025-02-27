@@ -15,3 +15,14 @@ export function onRectangleShape(shape: Shapes, clientX: number, clientY: number
     }
 
 }
+
+
+export function isRectangleShape(startX: number, startY: number, width: number, height: number, clientX: number, clientY: number, where: "outside" | "inside"): boolean {
+
+    const maxY = startY + height
+    const maxX = startX + width
+    const condition = where === "inside" ? startX <= clientX && maxX >= clientX && startY <= clientY && maxY >= clientY : startX >= clientX || maxX <= clientX || startY >= clientY || maxY <= clientY
+
+    return condition
+
+}
