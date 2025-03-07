@@ -1,3 +1,4 @@
+import { rectangle } from "./rectangle"
 
 
 
@@ -11,4 +12,5 @@ export function dimond(startX: number, startY: number, distance: number, strokeS
     ctx.lineTo(startX, startY)
     ctx.stroke()
     ctx.closePath()
+
 }

@@ -43,9 +43,10 @@ export type Shapes = {
     display: boolean
 } | {
     type: "text",
-    x: number,
-    y: number,
+    top: number,
+    left: number,
     textSize: number,
+    width: number,
     text: string,
     strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
     selected: boolean,

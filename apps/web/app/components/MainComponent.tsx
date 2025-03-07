@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { initDraw } from "../drawCanvas"
 import { CircleIcon, CursorIcon, RectangleIcon } from "../IconsSvgs/IconSvgs"
-import { ArrowRightIcon, DiamondIcon, EraserIcon, LetterTextIcon, PencilIcon } from "lucide-react"
+import { ArrowRightIcon, DiamondIcon, EraserIcon, LetterTextIcon, PencilIcon, Wind } from "lucide-react"
 import { ToolBarItems } from "./toolBarItems"
 
 
@@ -18,6 +18,7 @@ export function MainCanva({ roomId, socket }: {
     const dynamicCanvaRef = useRef<HTMLCanvasElement>(null);
     const staticCanvaRef = useRef<HTMLCanvasElement>(null);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
+    const previousText = useRef<string>("")
     const action = useRef<IAction>({
         type: "pointer"
     })
@@ -30,7 +31,7 @@ export function MainCanva({ roomId, socket }: {
     useEffect(() => {
         if (dynamicCanvaRef.current && textAreaRef.current && staticCanvaRef.current) {
 
-            initDraw(roomId, socket, dynamicCanvaRef.current, staticCanvaRef.current, action.current, textAreaRef.current)
+            initDraw(roomId, socket, dynamicCanvaRef.current, staticCanvaRef.current, action.current, textAreaRef)
         }
 
     }, [dynamicCanvaRef, staticCanvaRef, textAreaRef])
@@ -41,7 +42,21 @@ export function MainCanva({ roomId, socket }: {
         <canvas className=" overflow-auto  overscroll-contain   " ref={staticCanvaRef} height={10000} width={10000}  ></canvas>
         <canvas className="absolute  top-0 left-0 hidden overflow-auto bg-transparent  overscroll-contain  " ref={dynamicCanvaRef} height={10000} width={10000} ></canvas>
         <ToolBar shapeType={action.current} dynamicCanvaRef={dynamicCanvaRef} />
-        <textarea ref={textAreaRef} className="hidden   absolute  h-5  top-[200px] left-[200px] py-3 px-2 text-black outline-none resize-none  "  ></textarea>
+        <textarea ref={textAreaRef} className={`hidden h-12  min-w-12   absolute will-change-contents  top-[5200px] left-[5200px]  outline-none resize-none overflow-x-visible overflow-y-hidden`} onChange={(e) => {
+
+            // to increase and decrease the textarea accroding to contents
+            if (previousText.current.length < e.currentTarget.value.length) {
+                e.currentTarget.style.width = `${e.currentTarget.clientWidth + 8}px`
+                previousText.current = e.currentTarget.value
+            } else {
+                e.currentTarget.style.width = `${e.currentTarget.clientWidth - 8}px`
+                if (e.currentTarget.value.length <= 1) {
+                    previousText.current = ""
+                }
+
+            }
+        }}
+        ></textarea>
         {/* bg-[#121212] */}
     </div>
 }
@@ -53,6 +68,7 @@ function ToolBar({ shapeType, dynamicCanvaRef }: {
 
 }) {
     const [selectedTool, setSelectedTool] = useState<IAction>({ type: "pointer" })
+
     return <div className="fixed left-96  top-4 z-20  h-[2.5rem] bg-[#232329] rounded py-1 px-4  ">
         <div className="flex items-center gap-3">
             <ToolBarItems active={shapeType.type === "pointer"} children={<CursorIcon />} onClick={() => {
@@ -66,12 +82,16 @@ function ToolBar({ shapeType, dynamicCanvaRef }: {
                 setSelectedTool({ type: "rect" })
                 if (!dynamicCanvaRef.current) return
                 dynamicCanvaRef.current.style.display = "block"
+                console.log(shapeType.type)
+
             }} />
             <ToolBarItems active={shapeType.type === "circle"} children={<CircleIcon />} onClick={() => {
                 shapeType.type = "circle"
                 setSelectedTool({ type: "circle" })
                 if (!dynamicCanvaRef.current) return
                 dynamicCanvaRef.current.style.display = "block"
+                console.log(shapeType.type)
+
             }} />
             <ToolBarItems active={shapeType.type === "line"} children={<ArrowRightIcon className="text-white h-5 " />} onClick={() => {
                 shapeType.type = "line"

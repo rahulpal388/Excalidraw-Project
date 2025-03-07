@@ -2,17 +2,17 @@ import { findDistance } from "../drawCanvas/findDistance";
 import { Shapes } from "../drawCanvas/getShapes";
 
 
-export function onLineShape(shape: Shapes, clientX: number, clientY: number): boolean {
-    if (shape.type === "line") {
-        const length = findDistance(shape.startX, shape.startY, shape.endX, shape.endY)
-        const rigthLenght = findDistance(shape.startX, shape.startY, clientX, clientY)
-        const leftLenght = findDistance(shape.endX, shape.endY, clientX, clientY)
-        const onLine = Math.ceil(length) === Math.ceil(rigthLenght + leftLenght)
+export function onLineShape(startX: number, startY: number, endX: number, endY: number, clientX: number, clientY: number): boolean {
 
+    const length = findDistance(startX, startY, endX, endY)
+    const rigthLenght = findDistance(startX, startY, clientX, clientY)
+    const leftLenght = findDistance(endX, endY, clientX, clientY)
+    const onLine = Math.ceil(length) === Math.ceil(rigthLenght + leftLenght)
 
-        if (onLine) {
-            return true
-        }
+    if (onLine) {
+
+        return true
     }
     return false
+
 }
