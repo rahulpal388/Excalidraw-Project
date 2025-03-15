@@ -1,5 +1,6 @@
 import axios from "axios";
 import { HTTP_BACKEND, Token } from "../../config";
+import { IColors, IStyles } from "../components/MainComponent";
 
 export interface IPencileEndDimension {
     endX: number,
@@ -12,7 +13,9 @@ export type Shapes = {
     startY: number;
     height: number;
     width: number,
-    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    stroke:IColors
+    background:IColors
+    strokeWidth:IStyles["strokeWidth"]
     selected: boolean,
     display: boolean
 } | {
@@ -21,7 +24,9 @@ export type Shapes = {
     startY: number,
     radiusX: number,
     radiusY: number,
-    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    stroke:IColors
+    background:IColors
+    strokeWidth:IStyles["strokeWidth"]
     selected: boolean,
     display: boolean
 } | {
@@ -30,7 +35,7 @@ export type Shapes = {
     startY: number,
     endX: number,
     endY: number,
-    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    stroke:IColors
     selected: boolean,
     display: boolean
 } | {
@@ -38,7 +43,9 @@ export type Shapes = {
     startX: number,
     startY: number,
     distance: number,
-    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    stroke:IColors
+    background:IColors
+    strokeWidth:IStyles["strokeWidth"]
     selected: boolean,
     display: boolean
 } | {
@@ -48,7 +55,7 @@ export type Shapes = {
     textSize: number,
     width: number,
     text: string,
-    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    stroke:IColors
     selected: boolean,
     display: boolean
 } | {
@@ -56,7 +63,7 @@ export type Shapes = {
     startX: number,
     startY: number,
     endDimension: IPencileEndDimension[],
-    strokeStyle: "rgb(211, 211, 211)" | "rgb(49, 48, 59)" | "rgb(225,0,0)",
+    stroke:IColors
     selected: boolean,
     display: boolean
 }

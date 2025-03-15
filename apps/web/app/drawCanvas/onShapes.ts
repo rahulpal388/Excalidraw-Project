@@ -19,8 +19,10 @@ export function onShape(sCanvas: HTMLCanvasElement, existingShapes: Shapes[], cl
 
         }
         if (x.type === "circle") {
+            // console.log(x)
             const onCircle = onCircleShape(x, clientX, clientY, "both")
             if (onCircle) {
+                console.log("on circle")
                 sCanvas.style.cursor = "move"
                 currentShape.push(x)
 
@@ -51,7 +53,7 @@ export function onShape(sCanvas: HTMLCanvasElement, existingShapes: Shapes[], cl
             if (onText) {
                 sCanvas.style.cursor = "move"
                 currentShape.push(x)
-                console.log("on the text")
+                // console.log("on the text")
             }
         }
 

@@ -4,24 +4,50 @@ import { initDraw } from "../drawCanvas"
 import { CircleIcon, CursorIcon, RectangleIcon } from "../IconsSvgs/IconSvgs"
 import { ArrowRightIcon, DiamondIcon, EraserIcon, LetterTextIcon, PencilIcon, Wind } from "lucide-react"
 import { ToolBarItems } from "./toolBarItems"
+import { SelecetColors } from "./colors"
+import { Shapes } from "../drawCanvas/getShapes"
+import { drawShape, IselectedShape } from "../drawCanvas/drawShape"
+// import { DrawCanva } from "./drawCanva"
 
 
 export interface IAction {
     type: "text" | "rect" | "circle" | "pencile" | "line" | "pointer" | "dimond " | "erase" | "drag"
 }
 
+export type IColors = "rgba(255, 255, 255, 1)" | "rgba(239, 68, 68, 1)" | "rgba(249, 115, 22, 1)" | "rgba(59, 130, 246, 1)" | "rgba(34, 197, 94, 1)" | "rgba(18,18,18,1)"
+
+
+export interface IStyles {
+    stroke: IColors
+    background: IColors
+    fill: "fill"
+    strokeWidth: 3 | 4 | 5
+}
 
 export function MainCanva({ roomId, socket }: {
     roomId: string,
     socket: WebSocket
 }) {
+    const existingShape = useRef<Shapes[]>([])
     const dynamicCanvaRef = useRef<HTMLCanvasElement>(null);
     const staticCanvaRef = useRef<HTMLCanvasElement>(null);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
+    const [selectedTool, setSelectedTool] = useState<IAction>({ type: "pointer" })
+    const Style = useRef<IStyles>({
+        stroke: "rgba(255, 255, 255, 1)",
+        background: "rgba(18,18,18,1)",
+        fill: "fill",
+        strokeWidth: 3
+    })
     const previousText = useRef<string>("")
     const action = useRef<IAction>({
         type: "pointer"
     })
+
+
+
+
+
 
     useEffect(() => {
         window.scrollTo({ left: 5000, top: 5000, behavior: "smooth" })
@@ -29,22 +55,32 @@ export function MainCanva({ roomId, socket }: {
 
 
     useEffect(() => {
-        if (dynamicCanvaRef.current && textAreaRef.current && staticCanvaRef.current) {
-
-            initDraw(roomId, socket, dynamicCanvaRef.current, staticCanvaRef.current, action.current, textAreaRef)
+        console.log([...existingShape.current])
+        if (dynamicCanvaRef.current && staticCanvaRef.current) {
+            console.log("the drawing function is called ")
+            initDraw(roomId, socket, dynamicCanvaRef.current, staticCanvaRef.current, action, textAreaRef, setSelectedTool, existingShape.current, Style)
         }
 
+
+
     }, [dynamicCanvaRef, staticCanvaRef, textAreaRef])
+
+
+    useEffect(() => {
+        action.current.type = selectedTool.type
+        if (!dynamicCanvaRef.current) return
+        dynamicCanvaRef.current.style.display = selectedTool.type === "pointer" ? "none" : "block"
+    }, [selectedTool])
 
 
 
     return <div className="w-max h-max scroll-smooth">
         <canvas className=" overflow-auto  overscroll-contain   " ref={staticCanvaRef} height={10000} width={10000}  ></canvas>
         <canvas className="absolute  top-0 left-0 hidden overflow-auto bg-transparent  overscroll-contain  " ref={dynamicCanvaRef} height={10000} width={10000} ></canvas>
-        <ToolBar shapeType={action.current} dynamicCanvaRef={dynamicCanvaRef} />
-        <textarea ref={textAreaRef} className={`hidden h-12  min-w-12   absolute will-change-contents  top-[5200px] left-[5200px]  outline-none resize-none overflow-x-visible overflow-y-hidden`} onChange={(e) => {
-
-            // to increase and decrease the textarea accroding to contents
+        <SelecetColors Style={Style.current} />
+        <ToolBar selectedTool={selectedTool} setSelectedTool={setSelectedTool} />
+        {/* <textarea ref={textAreaRef} className={`hidden  row-span-1 min-w-16 min-h-12  absolute   top-[5200px] left-[5200px]  outline-none resize-none overflow-hidden `} onChange={(e) => {
+            // to increase and decrease the width of textarea accroding to contents
             if (previousText.current.length < e.currentTarget.value.length) {
                 e.currentTarget.style.width = `${e.currentTarget.clientWidth + 8}px`
                 previousText.current = e.currentTarget.value
@@ -55,73 +91,47 @@ export function MainCanva({ roomId, socket }: {
                 }
 
             }
+            // console.log(e.currentTarget.scrollWidth)
+            // e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`
+
         }}
         ></textarea>
-        {/* bg-[#121212] */}
+        bg-[#121212] */}
     </div>
 }
 
 
-function ToolBar({ shapeType, dynamicCanvaRef }: {
-    shapeType: IAction,
-    dynamicCanvaRef: React.RefObject<HTMLCanvasElement | null>
+function ToolBar({ selectedTool, setSelectedTool }: {
+    selectedTool: IAction
+    setSelectedTool: React.Dispatch<React.SetStateAction<IAction>>
 
 }) {
-    const [selectedTool, setSelectedTool] = useState<IAction>({ type: "pointer" })
 
     return <div className="fixed left-96  top-4 z-20  h-[2.5rem] bg-[#232329] rounded py-1 px-4  ">
         <div className="flex items-center gap-3">
-            <ToolBarItems active={shapeType.type === "pointer"} children={<CursorIcon />} onClick={() => {
-                shapeType.type = "pointer"
+            <ToolBarItems selectedTool={selectedTool.type === "pointer"} children={<CursorIcon />} onClick={() => {
                 setSelectedTool({ type: "pointer" })
-                if (!dynamicCanvaRef.current) return
-                dynamicCanvaRef.current.style.display = "none"
             }} />
-            <ToolBarItems active={shapeType.type === "rect"} children={<RectangleIcon />} onClick={() => {
-                shapeType.type = "rect"
+            <ToolBarItems selectedTool={selectedTool.type === "rect"} children={<RectangleIcon />} onClick={() => {
                 setSelectedTool({ type: "rect" })
-                if (!dynamicCanvaRef.current) return
-                dynamicCanvaRef.current.style.display = "block"
-                console.log(shapeType.type)
-
             }} />
-            <ToolBarItems active={shapeType.type === "circle"} children={<CircleIcon />} onClick={() => {
-                shapeType.type = "circle"
+            <ToolBarItems selectedTool={selectedTool.type === "circle"} children={<CircleIcon />} onClick={() => {
                 setSelectedTool({ type: "circle" })
-                if (!dynamicCanvaRef.current) return
-                dynamicCanvaRef.current.style.display = "block"
-                console.log(shapeType.type)
-
             }} />
-            <ToolBarItems active={shapeType.type === "line"} children={<ArrowRightIcon className="text-white h-5 " />} onClick={() => {
-                shapeType.type = "line"
+            <ToolBarItems selectedTool={selectedTool.type === "line"} children={<ArrowRightIcon className="text-white h-5 " />} onClick={() => {
                 setSelectedTool({ type: "line" })
-                if (!dynamicCanvaRef.current) return
-                dynamicCanvaRef.current.style.display = "block"
             }} />
-            <ToolBarItems active={shapeType.type === "dimond "} children={<DiamondIcon className="text-white h-5 " />} onClick={() => {
-                shapeType.type = "dimond "
+            <ToolBarItems selectedTool={selectedTool.type === "dimond "} children={<DiamondIcon className="text-white h-5 " />} onClick={() => {
                 setSelectedTool({ type: "dimond " })
-                if (!dynamicCanvaRef.current) return
-                dynamicCanvaRef.current.style.display = "block"
             }} />
-            {/* <ToolBarItems active={shapeType.type === "text"} children={<LetterTextIcon className="text-white h-5 " />} onClick={() => {
-                shapeType.type = "text"
+            <ToolBarItems selectedTool={selectedTool.type === "text"} children={<LetterTextIcon className="text-white h-5 " />} onClick={() => {
                 setSelectedTool({ type: "text" })
-                if (!dynamicCanvaRef.current) return
-                dynamicCanvaRef.current.style.display = "block"
-            }} /> */}
-            {/* <ToolBarItems active={shapeType.type === "pencile"} children={<PencilIcon className="text-white h-5 " />} onClick={() => {
-                shapeType.type = "pencile"
+            }} />
+            <ToolBarItems selectedTool={selectedTool.type === "pencile"} children={<PencilIcon className="text-white h-5 " />} onClick={() => {
                 setSelectedTool({ type: "pencile" })
-                if (!dynamicCanvaRef.current) return
-                dynamicCanvaRef.current.style.display = "block"
-            }} /> */}
-            <ToolBarItems active={shapeType.type === "erase"} children={<EraserIcon className="text-white h-5 " />} onClick={() => {
-                shapeType.type = "erase"
+            }} />
+            <ToolBarItems selectedTool={selectedTool.type === "erase"} children={<EraserIcon className="text-white h-5 " />} onClick={() => {
                 setSelectedTool({ type: "erase" })
-                if (!dynamicCanvaRef.current) return
-                dynamicCanvaRef.current.style.display = "none"
             }} />
 
         </div>

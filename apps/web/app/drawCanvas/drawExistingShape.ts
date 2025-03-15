@@ -1,33 +1,34 @@
+import { text } from "stream/consumers";
 import { circle } from "../drawShape/circle";
 import { dimond } from "../drawShape/dimond";
 import { line } from "../drawShape/line";
 import { rectangle } from "../drawShape/rectangle";
 import { Shapes } from "./getShapes";
+import { textDimension } from "../findDimension/textDimension";
+import { inserText } from "../drawShape/text";
+import { IStyles } from "../components/MainComponent";
 
 
 
-export function drawExistingShape(existingShapes: Shapes[], sCtx: CanvasRenderingContext2D) {
+export function drawExistingShape(existingShapes: Shapes[], sCtx: CanvasRenderingContext2D,Style:IStyles) {
     existingShapes.map(shape => {
         if (shape.type === "rect" && shape.display) {
-            rectangle(shape.startX, shape.startY, shape.width, shape.height, shape.strokeStyle, sCtx, "rounded")
+            rectangle(shape.startX, shape.startY, shape.width, shape.height, sCtx,shape.stroke,shape.strokeWidth,shape.background ,"rounded")
         }
         if (shape.type === "circle" && shape.display) {
-            circle(shape.startX, shape.startY, shape.radiusX, shape.radiusY, shape.strokeStyle, sCtx)
+            circle(shape.startX, shape.startY, shape.radiusX, shape.radiusY,  sCtx,shape.stroke,shape.strokeWidth,shape.background)
         }
         if (shape.type === "line" && shape.display) {
-            line(shape.startX, shape.startY, shape.endX, shape.endY, shape.strokeStyle, sCtx)
+            line(shape.startX, shape.startY, shape.endX, shape.endY, shape.stroke, sCtx)
         }
         if (shape.type === "dimond" && shape.display) {
-            dimond(shape.startX, shape.startY, shape.distance, shape.strokeStyle, sCtx)
+            dimond(shape.startX, shape.startY, shape.distance, shape.stroke, sCtx)
         }
         if (shape.type === "text" && shape.display) {
-            sCtx.font = `16px sans-serif`
-            sCtx.fillStyle = "white"
-            sCtx.fillText(shape.text, shape.left, shape.top + 5)
+            inserText(sCtx, shape.text, shape.top, shape.left)
         }
         if (shape.type === "pencile" && shape.display) {
             sCtx.beginPath()
-            sCtx.strokeStyle = shape.strokeStyle
             sCtx.moveTo(shape.startX, shape.startY)
             shape.endDimension.map(x => {
                 sCtx.lineTo(x.endX, x.endY)

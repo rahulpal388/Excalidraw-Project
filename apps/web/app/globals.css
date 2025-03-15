@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 /* Hide scrollbar for all browsers */
-/* ::-webkit-scrollbar {
+::-webkit-scrollbar {
     display: none;
-} */
+}
 
 /* For Firefox */
-/* html {
+html {
     scrollbar-width: none;
-} */
+}
 
 /* Ensure scrolling still works */
-/* body {
+body {
     overflow: auto;
-} */
+}

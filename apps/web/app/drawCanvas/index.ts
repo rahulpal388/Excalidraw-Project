@@ -1,14 +1,14 @@
-import { IAction } from "../components/MainComponent";
+import { IAction, IStyles } from "../components/MainComponent";
 import { clearCanvas } from "./clearCanva";
 import { drawExistingShape } from "./drawExistingShape";
-import { drawShape } from "./drawShape";
+import { drawShape, IselectedShape } from "./drawShape";
 import { getExistingStrokes, Shapes } from "./getShapes";
 
 
 
-export async function initDraw(roomId: string, socket: WebSocket, dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement, action: IAction, textAreaRef: React.RefObject<HTMLTextAreaElement | null>) {
+export async function initDraw(roomId: string, socket: WebSocket, dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement, action: React.RefObject<IAction>, textAreaRef: React.RefObject<HTMLTextAreaElement | null>, setSelectedTool: React.Dispatch<React.SetStateAction<IAction>>,existingShapes:Shapes[],Style:React.RefObject<IStyles>) {
 
-    let existingShapes: Shapes[] = await getExistingStrokes("chats")
+    //  existingShapes= await getExistingStrokes("chats")
 
     const sCtx = sCanvas.getContext("2d");
     const dCtx = dCanvas.getContext('2d')
@@ -26,14 +26,14 @@ export async function initDraw(roomId: string, socket: WebSocket, dCanvas: HTMLC
             const shape = message
             existingShapes.push(shape);
             clearCanvas(sCtx, sCanvas, "static");
-            drawExistingShape(existingShapes, sCtx)
+            drawExistingShape(existingShapes, sCtx,Style.current)
         }
     }
 
 
     clearCanvas(sCtx, sCanvas, "static");
-    drawExistingShape(existingShapes, sCtx)
-    drawShape(dCanvas, sCanvas, dCtx, sCtx, socket, action, existingShapes, textAreaRef)
+    drawExistingShape(existingShapes, sCtx,Style.current)
+    drawShape(dCanvas, sCanvas, dCtx, sCtx, socket, action, existingShapes, textAreaRef, setSelectedTool,Style.current)
 
 }
 
