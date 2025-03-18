@@ -13,9 +13,9 @@ export type Shapes = {
     startY: number;
     height: number;
     width: number,
-    stroke:IColors
-    background:IColors
-    strokeWidth:IStyles["strokeWidth"]
+    stroke: IColors
+    background: IColors
+    strokeWidth: IStyles["strokeWidth"]
     selected: boolean,
     display: boolean
 } | {
@@ -24,9 +24,9 @@ export type Shapes = {
     startY: number,
     radiusX: number,
     radiusY: number,
-    stroke:IColors
-    background:IColors
-    strokeWidth:IStyles["strokeWidth"]
+    stroke: IColors
+    background: IColors
+    strokeWidth: IStyles["strokeWidth"]
     selected: boolean,
     display: boolean
 } | {
@@ -35,7 +35,8 @@ export type Shapes = {
     startY: number,
     endX: number,
     endY: number,
-    stroke:IColors
+    stroke: IColors,
+    strokeWidth: number
     selected: boolean,
     display: boolean
 } | {
@@ -43,9 +44,9 @@ export type Shapes = {
     startX: number,
     startY: number,
     distance: number,
-    stroke:IColors
-    background:IColors
-    strokeWidth:IStyles["strokeWidth"]
+    stroke: IColors
+    background: IColors
+    strokeWidth: IStyles["strokeWidth"]
     selected: boolean,
     display: boolean
 } | {
@@ -55,7 +56,7 @@ export type Shapes = {
     textSize: number,
     width: number,
     text: string,
-    stroke:IColors
+    stroke: IColors
     selected: boolean,
     display: boolean
 } | {
@@ -63,7 +64,7 @@ export type Shapes = {
     startX: number,
     startY: number,
     endDimension: IPencileEndDimension[],
-    stroke:IColors
+    stroke: IColors
     selected: boolean,
     display: boolean
 }

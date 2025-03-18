@@ -5,13 +5,16 @@ import { drawShape, IselectedShape } from "./drawShape";
 import { getExistingStrokes, Shapes } from "./getShapes";
 
 
+export let existingShapes: Shapes[] = []
+export let sCtx: CanvasRenderingContext2D | null
+let dCtx: CanvasRenderingContext2D | null
 
-export async function initDraw(roomId: string, socket: WebSocket, dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement, action: React.RefObject<IAction>, textAreaRef: React.RefObject<HTMLTextAreaElement | null>, setSelectedTool: React.Dispatch<React.SetStateAction<IAction>>,existingShapes:Shapes[],Style:React.RefObject<IStyles>) {
+export async function initDraw(roomId: string, socket: WebSocket, dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement, action: React.RefObject<IAction>, textAreaRef: React.RefObject<HTMLTextAreaElement | null>, setSelectedTool: React.Dispatch<React.SetStateAction<IAction>>, Style: IStyles, styleRef: HTMLDivElement) {
 
-    //  existingShapes= await getExistingStrokes("chats")
+    // existingShapes = await getExistingStrokes("chats")
 
-    const sCtx = sCanvas.getContext("2d");
-    const dCtx = dCanvas.getContext('2d')
+    sCtx = sCanvas.getContext("2d");
+    dCtx = dCanvas.getContext('2d')
 
     if (!sCtx) return
     if (!dCtx) return
@@ -26,14 +29,15 @@ export async function initDraw(roomId: string, socket: WebSocket, dCanvas: HTMLC
             const shape = message
             existingShapes.push(shape);
             clearCanvas(sCtx, sCanvas, "static");
-            drawExistingShape(existingShapes, sCtx,Style.current)
+            drawExistingShape(existingShapes, sCtx, Style)
         }
     }
 
 
+
     clearCanvas(sCtx, sCanvas, "static");
-    drawExistingShape(existingShapes, sCtx,Style.current)
-    drawShape(dCanvas, sCanvas, dCtx, sCtx, socket, action, existingShapes, textAreaRef, setSelectedTool,Style.current)
+    drawExistingShape(existingShapes, sCtx, Style)
+    drawShape(dCanvas, sCanvas, dCtx, sCtx, socket, action, existingShapes, textAreaRef, setSelectedTool, Style, styleRef)
 
 }
 

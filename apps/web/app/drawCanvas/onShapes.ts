@@ -6,14 +6,16 @@ import { onLineShape } from "../selectShapeFunctions/lineShape";
 
 
 
-export function onShape(sCanvas: HTMLCanvasElement, existingShapes: Shapes[], clientX: number, clientY: number, currentShape: Shapes[]) {
+export function onShape(sCanvas: HTMLCanvasElement, existingShapes: Shapes[], clientX: number, clientY: number, currentShape: Shapes[]): boolean {
     currentShape.length = 0
     existingShapes.forEach(x => {
         if (x.type === "rect") {
             const onRectangle = isRectangleShape(x.startX - 4, x.startY - 4, x.width + 8, x.height + 8, clientX, clientY, "inside") && isRectangleShape(x.startX + 4, x.startY + 4, x.width - 8, x.height - 8, clientX, clientY, "outside")
             if (onRectangle) {
+                console.log("on rectangel shape")
                 sCanvas.style.cursor = "move"
                 currentShape.push(x)
+                return true
 
             }
 
@@ -25,7 +27,7 @@ export function onShape(sCanvas: HTMLCanvasElement, existingShapes: Shapes[], cl
                 console.log("on circle")
                 sCanvas.style.cursor = "move"
                 currentShape.push(x)
-
+                return true
             }
         }
 
@@ -35,6 +37,7 @@ export function onShape(sCanvas: HTMLCanvasElement, existingShapes: Shapes[], cl
             if (onDimond && !x.selected) {
                 sCanvas.style.cursor = "move"
                 currentShape.push(x)
+                return true
             }
 
         }
@@ -45,6 +48,7 @@ export function onShape(sCanvas: HTMLCanvasElement, existingShapes: Shapes[], cl
             if (onLine && !x.selected) {
                 sCanvas.style.cursor = "move"
                 currentShape.push(x)
+                return true
             }
         }
 
@@ -53,12 +57,13 @@ export function onShape(sCanvas: HTMLCanvasElement, existingShapes: Shapes[], cl
             if (onText) {
                 sCanvas.style.cursor = "move"
                 currentShape.push(x)
+                return true
                 // console.log("on the text")
             }
         }
 
     })
-
+    return false
 
 }
 

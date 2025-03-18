@@ -5,55 +5,65 @@ import { on } from "events"
 
 
 
-export function SelecetColors({ Style }: {
+export function SelectColors({ Style, ref, setStyleChange }: {
     Style: IStyles
+    ref: React.Ref<HTMLDivElement>
+    setStyleChange: React.Dispatch<React.SetStateAction<boolean>>
 }) {
     const [currentStroke, setCurrentStroke] = useState<IStyles["stroke"]>("rgba(255, 255, 255, 1)")
-    const [currentBackground, setCurrentBackground] = useState<IStyles["background"]>("rgba(18,18,18,1)")
-    const [currentFill, setCurrentFill] = useState<IStyles["fill"]>("fill")
+    const [currentBackground, setCurrentBackground] = useState<IStyles["background"]>("rgba(0, 0, 0, .1)")
+    // const [currentFill, setCurrentFill] = useState<IStyles["fill"]>("fill")
     const [currentStrokeWIdth, setCurrentStrokeWidth] = useState<IStyles["strokeWidth"]>(3)
 
     return (
-        <div className="fixed top-24 ml-4 left-1  px-4 py-2  flex flex-col gap-2  bg-[#232329] rounded">
+        <div ref={ref} className="fixed top-24 ml-4 left-1  px-4 py-2  flex flex-col gap-2  bg-[#232329] rounded">
             <div className="flex flex-col gap-2">
                 <h5 className="text-white  text-sm">Stroke</h5>
                 <div className="flex gap-2">
                     <Colors color="bg-white" active={currentStroke === "rgba(255, 255, 255, 1)"} onClick={() => {
                         Style.stroke = "rgba(255, 255, 255, 1)"
                         setCurrentStroke("rgba(255, 255, 255, 1)")
+                        setStyleChange(true)
                     }} />
                     <Colors color="bg-red-600" active={currentStroke === "rgba(239, 68, 68, 1)"} onClick={() => {
                         Style.stroke = "rgba(239, 68, 68, 1)"
                         setCurrentStroke("rgba(239, 68, 68, 1)")
+                        setStyleChange(true)
                     }} />
                     <Colors color="bg-green-600" active={currentStroke === "rgba(34, 197, 94, 1)"} onClick={() => {
                         Style.stroke = "rgba(34, 197, 94, 1)"
                         setCurrentStroke("rgba(34, 197, 94, 1)")
+                        setStyleChange(true)
                     }} />
                     <Colors color="bg-orange-600" active={currentStroke === "rgba(249, 115, 22, 1)"} onClick={() => {
                         Style.stroke = "rgba(249, 115, 22, 1)"
                         setCurrentStroke("rgba(249, 115, 22, 1)")
+                        setStyleChange(true)
                     }} />
                 </div>
             </div>
             <div className="flex flex-col gap-2">
                 <h5 className="text-white  text-sm">Background</h5>
                 <div className="flex gap-2">
-                    <Colors color="bg-[#121212]" active={currentBackground === "rgba(18,18,18,1)"} onClick={() => {
-                        Style.background = "rgba(18,18,18,1)"
-                        setCurrentBackground("rgba(18,18,18,1)")
+                    <Colors color="bg-[#121212]" active={currentBackground === "rgba(0, 0, 0, .1)"} onClick={() => {
+                        Style.background = "rgba(0, 0, 0, .1)"
+                        setCurrentBackground("rgba(0, 0, 0, .1)")
+                        setStyleChange(true)
                     }} />
                     <Colors color="bg-red-600" active={currentBackground === "rgba(239, 68, 68, 1)"} onClick={() => {
                         Style.background = "rgba(239, 68, 68, 1)"
+                        setStyleChange(true)
                         setCurrentBackground("rgba(239, 68, 68, 1)")
                     }} />
                     <Colors color="bg-green-600" active={currentBackground === "rgba(34, 197, 94, 1)"} onClick={() => {
                         Style.background = "rgba(34, 197, 94, 1)"
                         setCurrentBackground("rgba(34, 197, 94, 1)")
+                        setStyleChange(true)
                     }} />
                     <Colors color="bg-orange-600" active={currentBackground === "rgba(249, 115, 22, 1)"} onClick={() => {
                         Style.background = "rgba(249, 115, 22, 1)"
                         setCurrentBackground("rgba(249, 115, 22, 1)")
+                        setStyleChange(true)
                     }} />
                 </div>
             </div>
@@ -63,14 +73,17 @@ export function SelecetColors({ Style }: {
                     <StrokeWidth active={currentStrokeWIdth === 3} children={<Minus className="stroke-white " strokeWidth={1} size={28} />} onClick={() => {
                         Style.strokeWidth = 3
                         setCurrentStrokeWidth(3)
+                        setStyleChange(true)
                     }} />
                     <StrokeWidth active={currentStrokeWIdth === 4} children={<Minus className="stroke-white " strokeWidth={2.7} size={28} />} onClick={() => {
                         Style.strokeWidth = 4
                         setCurrentStrokeWidth(4)
+                        setStyleChange(true)
                     }} />
                     <StrokeWidth active={currentStrokeWIdth === 5} children={<Minus className="stroke-white " strokeWidth={1} size={28} />} onClick={() => {
                         Style.strokeWidth = 5
                         setCurrentStrokeWidth(5)
+                        setStyleChange(true)
                     }} />
 
                 </div>

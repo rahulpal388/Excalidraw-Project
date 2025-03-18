@@ -1,12 +1,13 @@
 "use client"
 import React, { useEffect, useRef, useState } from "react"
-import { initDraw } from "../drawCanvas"
+import { existingShapes, initDraw, sCtx } from "../drawCanvas"
 import { CircleIcon, CursorIcon, RectangleIcon } from "../IconsSvgs/IconSvgs"
 import { ArrowRightIcon, DiamondIcon, EraserIcon, LetterTextIcon, PencilIcon, Wind } from "lucide-react"
 import { ToolBarItems } from "./toolBarItems"
-import { SelecetColors } from "./colors"
+import { SelectColors } from "./colors"
 import { Shapes } from "../drawCanvas/getShapes"
-import { drawShape, IselectedShape } from "../drawCanvas/drawShape"
+import { drawShape, IselectedShape, selectedShape } from "../drawCanvas/drawShape"
+import { drawExistingShape } from "../drawCanvas/drawExistingShape"
 // import { DrawCanva } from "./drawCanva"
 
 
@@ -14,7 +15,7 @@ export interface IAction {
     type: "text" | "rect" | "circle" | "pencile" | "line" | "pointer" | "dimond " | "erase" | "drag"
 }
 
-export type IColors = "rgba(255, 255, 255, 1)" | "rgba(239, 68, 68, 1)" | "rgba(249, 115, 22, 1)" | "rgba(59, 130, 246, 1)" | "rgba(34, 197, 94, 1)" | "rgba(18,18,18,1)"
+export type IColors = "rgba(255, 255, 255, 1)" | "rgba(239, 68, 68, 1)" | "rgba(249, 115, 22, 1)" | "rgba(59, 130, 246, 1)" | "rgba(34, 197, 94, 1)" | "rgba(0, 0, 0, .1)"
 
 
 export interface IStyles {
@@ -24,18 +25,20 @@ export interface IStyles {
     strokeWidth: 3 | 4 | 5
 }
 
+
 export function MainCanva({ roomId, socket }: {
     roomId: string,
     socket: WebSocket
 }) {
-    const existingShape = useRef<Shapes[]>([])
     const dynamicCanvaRef = useRef<HTMLCanvasElement>(null);
     const staticCanvaRef = useRef<HTMLCanvasElement>(null);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [selectedTool, setSelectedTool] = useState<IAction>({ type: "pointer" })
+    const styleRef = useRef<HTMLDivElement>(null)
+    const [isStyleChange, setStyleChange] = useState<boolean>(false)
     const Style = useRef<IStyles>({
         stroke: "rgba(255, 255, 255, 1)",
-        background: "rgba(18,18,18,1)",
+        background: "rgba(0, 0, 0, .1)",
         fill: "fill",
         strokeWidth: 3
     })
@@ -45,39 +48,45 @@ export function MainCanva({ roomId, socket }: {
     })
 
 
-
-
-
-
     useEffect(() => {
         window.scrollTo({ left: 5000, top: 5000, behavior: "smooth" })
     }, [])
 
 
     useEffect(() => {
-        console.log([...existingShape.current])
-        if (dynamicCanvaRef.current && staticCanvaRef.current) {
-            console.log("the drawing function is called ")
-            initDraw(roomId, socket, dynamicCanvaRef.current, staticCanvaRef.current, action, textAreaRef, setSelectedTool, existingShape.current, Style)
+        if (dynamicCanvaRef.current && staticCanvaRef.current && styleRef.current) {
+            // console.log("the drawing function is called ")
+            initDraw(roomId, socket, dynamicCanvaRef.current, staticCanvaRef.current, action, textAreaRef, setSelectedTool, Style.current, styleRef.current)
         }
 
-
-
-    }, [dynamicCanvaRef, staticCanvaRef, textAreaRef])
+    }, [dynamicCanvaRef, staticCanvaRef, styleRef])
 
 
     useEffect(() => {
         action.current.type = selectedTool.type
         if (!dynamicCanvaRef.current) return
+        if (!styleRef.current) return
         dynamicCanvaRef.current.style.display = selectedTool.type === "pointer" ? "none" : "block"
+        styleRef.current.style.display = selectedTool.type === "pointer" ? "none" : "block"
     }, [selectedTool])
 
 
+    useEffect(() => {
+        if (isStyleChange && action.current.type === "pointer" && selectedShape.isSeletedShape) {
+            existingShapes.forEach(x => {
+                if (x === selectedShape.currentSelectedShape) {
+                    x.stroke = Style.current.stroke
+                }
+            })
+            drawExistingShape(existingShapes, sCtx, Style.current)
+            setStyleChange(false)
+        }
+    }, [isStyleChange])
 
     return <div className="w-max h-max scroll-smooth">
-        <canvas className=" overflow-auto  overscroll-contain   " ref={staticCanvaRef} height={10000} width={10000}  ></canvas>
+        <canvas className=" overflow-auto  overscroll-contain bg-black  " ref={staticCanvaRef} height={10000} width={10000}  ></canvas>
         <canvas className="absolute  top-0 left-0 hidden overflow-auto bg-transparent  overscroll-contain  " ref={dynamicCanvaRef} height={10000} width={10000} ></canvas>
-        <SelecetColors Style={Style.current} />
+        <SelectColors Style={Style.current} ref={styleRef} setStyleChange={setStyleChange} />
         <ToolBar selectedTool={selectedTool} setSelectedTool={setSelectedTool} />
         {/* <textarea ref={textAreaRef} className={`hidden  row-span-1 min-w-16 min-h-12  absolute   top-[5200px] left-[5200px]  outline-none resize-none overflow-hidden `} onChange={(e) => {
             // to increase and decrease the width of textarea accroding to contents
