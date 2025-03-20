@@ -14,7 +14,7 @@ import { rectangleDimension } from "../findDimension/rectangleDimension";
 import { onMarkedShape } from "../selectShapeFunctions/markedShape";
 import { circleDimension } from "../findDimension/circleDimension";
 
-export type IActionType = "move" | "l-resize" | "r-resize" | "t-resize" | "b-resize" | "none"
+export type IActionType = "move" | "l-resize" | "r-resize" | "t-resize" | "b-resize" | "none" | "t-cl-resize" | "t-cr-resize" | "b-cl-resize" | "b-cr-resize" | "rotate"
 
 
 export interface IselectedShape {
@@ -41,7 +41,6 @@ let distanceMoveClick = { a: 0, b: 0 };  // distance between starting point and 
 export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement, dCtx: CanvasRenderingContext2D, sCtx: CanvasRenderingContext2D, socket: WebSocket, action: React.RefObject<IAction>, existingShapes: Shapes[], textAreaRef: React.RefObject<HTMLTextAreaElement | null>, setSelectedTool: React.Dispatch<React.SetStateAction<IAction>>, style: IStyles, styleRef: HTMLDivElement) {
 
     shapeType = action.current
-    console.log("after callin the setSelectedTool this function is called again")
 
     dCanvas.addEventListener("mousedown", (e) => {
         clicked = true
@@ -113,36 +112,37 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
                     // changing the dimension of the rectangle
                     const dimension = rectangleDimension(shape.startX, shape.startY, shape.width, shape.height, clientX, clientY, selectedShape.actionType, distanceMoveClick)
                     if (!dimension) return
-                    const { startX, startY, height, width, cursorType } = dimension
+                    const { startX, startY, height, width, cursorType, markX, markY, markHeight, markWidth } = dimension
                     dCanvas.style.cursor = cursorType
                     clearCanvas(dCtx, dCanvas, "dymanic")
                     rectangle(startX, startY, width, height, dCtx, shape.stroke, shape.strokeWidth, shape.background, "rounded")
+
                     markSelectedShape(dCtx, {
                         type: "rect",
-                        startX,
-                        startY,
-                        height,
-                        width,
+                        startX: markX,
+                        startY: markY,
+                        height: markHeight,
+                        width: markWidth,
                         selected: true,
                         display: true,
                         stroke: style.stroke,
                         background: style.background,
                         strokeWidth: style.strokeWidth,
-                    })
+                    }, selectedShape.actionType)
                 }
 
                 // broken login in moving the shape
                 if (shape.type === "circle") {
                     const dimension = circleDimension(shape.startX, shape.startY, shape.radiusX, shape.radiusY, clientX, clientY, selectedShape.actionType, distanceMoveClick)
                     if (!dimension) return
-                    const { startX, startY, radiusX, radiusY, cursorType } = dimension
+                    const { startX, startY, radiusX, radiusY, moveX, moveY, cursorType } = dimension
                     dCanvas.style.cursor = cursorType
                     clearCanvas(dCtx, dCanvas, "dymanic")
-                    circle(startX, startY, radiusX, radiusY, dCtx, shape.stroke, shape.strokeWidth, shape.background)
+                    circle(startX, startY, Math.abs(radiusX), Math.abs(radiusY), dCtx, shape.stroke, shape.strokeWidth, shape.background)
                     markSelectedShape(dCtx, {
                         type: "circle",
-                        startX,
-                        startY,
+                        startX: moveX,
+                        startY: moveY,
                         radiusX,
                         radiusY,
                         selected: true,
@@ -150,7 +150,7 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
                         stroke: style.stroke,
                         background: style.background,
                         strokeWidth: style.strokeWidth,
-                    })
+                    }, selectedShape.actionType)
                 }
 
                 if (shape.type === "line") {
@@ -177,7 +177,13 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
         const clientX = e.clientX + Math.ceil(window.scrollX)
         const clientY = e.clientY + Math.ceil(window.scrollY)
 
-        let shape: Shapes
+        if ((startX - clientX) === 0 && (startY - clientY) === 0) {
+            setSelectedTool({ type: "pointer" })
+            return
+        }
+
+
+
         if (shapeType.type === "rect") {
             const height = clientY - startY;
             const width = clientX - startX
@@ -197,6 +203,20 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
                 selected: false,
                 display: true
             }, selectedShape, style)
+
+            selectedShape.currentSelectedShape = {
+                type: "rect",
+                startX: x,
+                startY: y,
+                height: Math.abs(height),
+                width: Math.abs(width),
+                stroke: style.stroke,
+                background: style.background,
+                strokeWidth: style.strokeWidth,
+                selected: false,
+                display: true
+            }
+
             setSelectedTool({ type: "pointer" })
             return
 
@@ -271,10 +291,10 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
                 // update the existingShapes and render to static canva and make intractive canva disable
                 CanvaChangeShapeUpdate(sCtx, sCanvas, dCtx, dCanvas, existingShapes, selectedShape, {
                     type: "rect",
-                    startX: dimension.startX,
-                    startY: dimension.startY,
-                    height: dimension.height,
-                    width: dimension.width,
+                    startX: dimension.x,
+                    startY: dimension.y,
+                    height: Math.abs(dimension.height),
+                    width: Math.abs(dimension.width),
                     stroke,
                     background,
                     strokeWidth,
@@ -295,8 +315,8 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
                     type: "circle",
                     startX: dimension.startX,
                     startY: dimension.startY,
-                    radiusX: dimension.radiusX,
-                    radiusY: dimension.radiusY,
+                    radiusX: Math.abs(dimension.radiusX),
+                    radiusY: Math.abs(dimension.radiusY),
                     stroke,
                     background,
                     strokeWidth,
@@ -383,7 +403,7 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
 
         // console.log([...existingShapes])
         const shape = selectedShape.currentSelectedShape
-        console.log(selectedShape.actionType)
+        // console.log(selectedShape.actionType)
         if (selectedShape.isSeletedShape && shape) {
             if (selectedShape.actionType !== "none") {
                 // console.log([...existingShapes])
@@ -414,7 +434,7 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
                 clearCanvas(dCtx, dCanvas, "dymanic")
                 console.log(shape.display)
                 drawExistingShape([shape], dCtx, style)
-                markSelectedShape(dCtx, shape)
+                markSelectedShape(dCtx, shape, selectedShape.actionType)
                 existingShapes.forEach(x => {
                     if (x === selectedShape.currentSelectedShape) {
                         x.display = false
@@ -430,7 +450,8 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
     sCanvas.addEventListener("mousemove", (e) => {
         const clientX = e.clientX + Math.ceil(window.scrollX)
         const clientY = e.clientY + Math.ceil(window.scrollY)
-        console.log(selectedShape.isSeletedShape)
+        // console.log(selectedShape.isSeletedShape)
+        // console.log([...existingShapes])
         if (shapeType.type === "pointer") {
             // console.log("on static canva")
             // console.log(shapeType.type)
@@ -446,18 +467,19 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
         // depending upon the selected shape check whether the mouse is inside or on which side of the marked shape and according to that change the actionType 
         if (selectedShape.isSeletedShape && selectedShape.currentSelectedShape) {
             const x = selectedShape.currentSelectedShape
+            styleRef.style.display = "block"
             if (x.type === "rect") {
                 // depending on the where mouse is on markedShape it set the actionType
-                selectedShape.actionType = onMarkedShape(x.startX - 9, x.startY - 9, x.width + 1, x.height + 1, clientX, clientY, sCanvas)
+                selectedShape.actionType = onMarkedShape(x.startX, x.startY, x.width, x.height, clientX, clientY, sCanvas)
                 // console.log(a)
             }
 
             if (x.type === "circle") {
-                selectedShape.actionType = onMarkedShape(x.startX - x.radiusX - 7, x.startY - x.radiusY - 7, 2 * x.radiusX - 2, 2 * x.radiusY - 2, clientX, clientY, sCanvas)
+                selectedShape.actionType = onMarkedShape(x.startX - x.radiusX, x.startY - x.radiusY, 2 * x.radiusX, 2 * x.radiusY, clientX, clientY, sCanvas)
 
             }
             if (x.type === "dimond") {
-                selectedShape.actionType = onMarkedShape(x.startX - (x.distance / 2) - 4, x.startY - 4, x.distance - 5, x.distance - 5, clientX, clientY, sCanvas)
+                selectedShape.actionType = onMarkedShape(x.startX - (x.distance / 2), x.startY, x.distance, x.distance, clientX, clientY, sCanvas)
             }
 
             if (x.type === "line") {
@@ -469,11 +491,6 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
                 } else {
                     selectedShape.actionType = "none"
                 }
-            }
-
-            if (x.type === "text") {
-                selectedShape.actionType = onMarkedShape(x.left - 10, x.top - 15, x.width + 14, 23, clientX, clientY, sCanvas)
-
             }
 
 
@@ -509,7 +526,7 @@ export function drawShape(dCanvas: HTMLCanvasElement, sCanvas: HTMLCanvasElement
                     selectedShape.currentSelectedShape = x
                 }
             })
-            markSelectedShape(sCtx, selectedShape.currentShape[0])
+            markSelectedShape(sCtx, selectedShape.currentShape[0], selectedShape.actionType)
         }
     })
 

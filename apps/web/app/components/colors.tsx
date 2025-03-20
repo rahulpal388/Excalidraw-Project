@@ -11,7 +11,7 @@ export function SelectColors({ Style, ref, setStyleChange }: {
     setStyleChange: React.Dispatch<React.SetStateAction<boolean>>
 }) {
     const [currentStroke, setCurrentStroke] = useState<IStyles["stroke"]>("rgba(255, 255, 255, 1)")
-    const [currentBackground, setCurrentBackground] = useState<IStyles["background"]>("rgba(0, 0, 0, .1)")
+    const [currentBackground, setCurrentBackground] = useState<IStyles["background"]>("rgba(0, 0, 0, 0.1)")
     // const [currentFill, setCurrentFill] = useState<IStyles["fill"]>("fill")
     const [currentStrokeWIdth, setCurrentStrokeWidth] = useState<IStyles["strokeWidth"]>(3)
 
@@ -45,9 +45,9 @@ export function SelectColors({ Style, ref, setStyleChange }: {
             <div className="flex flex-col gap-2">
                 <h5 className="text-white  text-sm">Background</h5>
                 <div className="flex gap-2">
-                    <Colors color="bg-[#121212]" active={currentBackground === "rgba(0, 0, 0, .1)"} onClick={() => {
-                        Style.background = "rgba(0, 0, 0, .1)"
-                        setCurrentBackground("rgba(0, 0, 0, .1)")
+                    <Colors color="bg-[#121212]" active={currentBackground === "rgba(0, 0, 0, 0.1)"} onClick={() => {
+                        Style.background = "rgba(0, 0, 0, 0.1)"
+                        setCurrentBackground("rgba(0, 0, 0, 0.1)")
                         setStyleChange(true)
                     }} />
                     <Colors color="bg-red-600" active={currentBackground === "rgba(239, 68, 68, 1)"} onClick={() => {

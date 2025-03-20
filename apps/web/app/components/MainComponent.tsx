@@ -8,6 +8,7 @@ import { SelectColors } from "./colors"
 import { Shapes } from "../drawCanvas/getShapes"
 import { drawShape, IselectedShape, selectedShape } from "../drawCanvas/drawShape"
 import { drawExistingShape } from "../drawCanvas/drawExistingShape"
+import { circle } from "../drawShape/circle"
 // import { DrawCanva } from "./drawCanva"
 
 
@@ -15,14 +16,14 @@ export interface IAction {
     type: "text" | "rect" | "circle" | "pencile" | "line" | "pointer" | "dimond " | "erase" | "drag"
 }
 
-export type IColors = "rgba(255, 255, 255, 1)" | "rgba(239, 68, 68, 1)" | "rgba(249, 115, 22, 1)" | "rgba(59, 130, 246, 1)" | "rgba(34, 197, 94, 1)" | "rgba(0, 0, 0, .1)"
+export type IColors = "rgba(255, 255, 255, 1)" | "rgba(239, 68, 68, 1)" | "rgba(249, 115, 22, 1)" | "rgba(59, 130, 246, 1)" | "rgba(34, 197, 94, 1)" | "rgba(0, 0, 0, 0.1)"
 
 
 export interface IStyles {
     stroke: IColors
     background: IColors
     fill: "fill"
-    strokeWidth: 3 | 4 | 5
+    strokeWidth: 2 | 3 | 4 | 5
 }
 
 
@@ -38,7 +39,7 @@ export function MainCanva({ roomId, socket }: {
     const [isStyleChange, setStyleChange] = useState<boolean>(false)
     const Style = useRef<IStyles>({
         stroke: "rgba(255, 255, 255, 1)",
-        background: "rgba(0, 0, 0, .1)",
+        background: "rgba(0, 0, 0, 0.1)",
         fill: "fill",
         strokeWidth: 3
     })
@@ -75,7 +76,12 @@ export function MainCanva({ roomId, socket }: {
         if (isStyleChange && action.current.type === "pointer" && selectedShape.isSeletedShape) {
             existingShapes.forEach(x => {
                 if (x === selectedShape.currentSelectedShape) {
+                    console.log(selectedShape.currentSelectedShape)
                     x.stroke = Style.current.stroke
+                    if (x.type === "circle" || x.type === "rect") {
+                        x.background = Style.current.background
+                        x.strokeWidth = Style.current.strokeWidth
+                    }
                 }
             })
             drawExistingShape(existingShapes, sCtx, Style.current)
