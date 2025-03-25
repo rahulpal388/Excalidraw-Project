@@ -1,8 +1,7 @@
 "use client"
 import React, { useEffect, useRef, useState } from "react"
-import { existingShapes } from "../drawCanvas/classDrawShape"
+import { existingShapes, shape } from "../drawCanvas/classDrawShape"
 import { SelectColors } from "./colors"
-// import { selectedShape } from "../drawCanvas/drawShape"
 import { drawExistingShape } from "../drawCanvas/drawExistingShape"
 import { Draw, isSelected } from "../drawCanvas/classDrawShape"
 import { ToolBar } from "./toolBar"
@@ -55,8 +54,6 @@ export function MainCanva({ roomId, socket }: {
 
     useEffect(() => {
         if (dynamicCanvaRef.current && staticCanvaRef.current && styleRef.current) {
-            // console.log("the drawing function is called ")
-            // initDraw(roomId, socket, dynamicCanvaRef.current, staticCanvaRef.current, action, textAreaRef, setSelectedTool, Style.current, styleRef.current)
             dCanva.current = dynamicCanvaRef.current
             sCanva.current = staticCanvaRef.current
             sCtx.current = sCanva.current.getContext("2d")
@@ -65,7 +62,7 @@ export function MainCanva({ roomId, socket }: {
             if (!sCtx.current) return
             sCtx.current.fillStyle = "rgba(18,18,18,1)"
             dCtx.current.fillStyle = "rgba(255, 255, 255, 0)"
-            const drawObj = new Draw(sCanva.current, dCanva.current, sCtx.current, dCtx.current, action.current, Style.current, setSelectedTool, socket)
+            const drawObj = new Draw(sCanva.current, dCanva.current, sCtx.current, dCtx.current, action.current, Style.current, setSelectedTool, socket, styleRef)
 
         }
 
@@ -87,21 +84,22 @@ export function MainCanva({ roomId, socket }: {
     }, [selectedTool])
 
 
-    // useEffect(() => {
-    //     if (isStyleChange && action.current.type === "pointer" && shape) {
-    //         existingShapes.forEach(x => {
-    //             if (x === shape) {
-    //                 x.stroke = Style.current.stroke
-    //                 if (x.type === "circle" || x.type === "rect") {
-    //                     x.background = Style.current.background
-    //                     x.strokeWidth = Style.current.strokeWidth
-    //                 }
-    //             }
-    //         })
-    //         drawExistingShape(existingShapes, sCtx.current, Style.current)
-    //         setStyleChange(false)
-    //     }
-    // }, [isStyleChange])
+    useEffect(() => {
+        if (isStyleChange && action.current.type === "pointer" && shape.value) {
+            console.log("changing the style")
+            existingShapes.forEach(x => {
+                if (x.id === shape.value.id) {
+                    x.stroke = Style.current.stroke
+                    if (x.type === "circle" || x.type === "rect") {
+                        x.background = Style.current.background
+                        x.strokeWidth = Style.current.strokeWidth
+                    }
+                }
+            })
+            drawExistingShape(existingShapes, sCtx.current, Style.current)
+            setStyleChange(false)
+        }
+    }, [isStyleChange])
 
     return <div className="w-max h-max scroll-smooth">
         <canvas className=" overflow-auto  overscroll-contain bg-black  " ref={staticCanvaRef} height={10000} width={10000}  ></canvas>

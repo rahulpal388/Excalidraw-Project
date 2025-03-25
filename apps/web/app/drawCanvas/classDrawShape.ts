@@ -3,7 +3,6 @@ import { rectangle } from "../drawShape/rectangle";
 import { clearCanvas } from "./clearCanva";
 import { circle } from "../drawShape/circle";
 import { arrow } from "../drawShape/line";
-import { Shapes } from "./getShapes";
 import { CanvaChangeShapeUpdate, CanvaShapeUpdate } from "../shapeUpdates/shapeUpdate";
 import { onShape } from "./onShapes";
 import { drawExistingShape } from "./drawExistingShape";
@@ -12,6 +11,7 @@ import { onMarkedLine, onMarkedShape } from "../selectShapeFunctions/markedShape
 import { rectangleDimension } from "../findDimension/rectangleDimension";
 import { circleDimension } from "../findDimension/circleDimension";
 import { dimond } from "../drawShape/dimond";
+import { Shapes } from "./getShapes";
 
 // when you are clearning the canva you can specify the height and width so, it good to not clear the whole canva only the visual part is enough and it also get grids of the drawing of the shape that are not visiual on the sereen #fix it 
 
@@ -22,6 +22,7 @@ export type IActionType = "move" | "l-resize" | "r-resize" | "t-resize" | "b-res
 
 export let isSelected = { value: false }
 export let existingShapes: Shapes[] = []
+export let shape = { value: {} as Shapes }
 
 export class Draw {
     private sCanva: HTMLCanvasElement
@@ -32,6 +33,7 @@ export class Draw {
     style: IStyles
     socket: WebSocket
     setSelectedTool: React.Dispatch<React.SetStateAction<IAction>>
+    styleRef: React.RefObject<HTMLDivElement | null>
     existingShapes: Shapes[] = []
     currentShape: { value: Shapes } = {} as { value: Shapes }
     startX = 0
@@ -51,10 +53,10 @@ export class Draw {
     moveY = 0
     top = 0
     left = 0
-    shape: Shapes = {} as Shapes
 
 
-    constructor(sCanav: HTMLCanvasElement, dCanva: HTMLCanvasElement, sCtx: CanvasRenderingContext2D, dCtx: CanvasRenderingContext2D, action: IAction, style: IStyles, setSelectedTool: React.Dispatch<React.SetStateAction<IAction>>, socket: WebSocket) {
+
+    constructor(sCanav: HTMLCanvasElement, dCanva: HTMLCanvasElement, sCtx: CanvasRenderingContext2D, dCtx: CanvasRenderingContext2D, action: IAction, style: IStyles, setSelectedTool: React.Dispatch<React.SetStateAction<IAction>>, socket: WebSocket, styleRef: React.RefObject<HTMLDivElement | null>) {
         this.sCanva = sCanav
         this.dCanva = dCanva
         this.sCtx = sCtx
@@ -63,6 +65,7 @@ export class Draw {
         this.style = style
         this.setSelectedTool = setSelectedTool
         this.socket = socket
+        this.styleRef = styleRef
 
 
         this.dCanva.addEventListener("mousedown", this.dCanvaDown)
@@ -107,22 +110,22 @@ export class Draw {
                 }
             }
             if (isSelected.value && this.actionType !== "none") {
-                const shape = this.shape
+                const _shape = { ...shape.value }
                 this.moveX = this.clientX - this.startX;
                 this.moveY = this.clientY - this.startY
 
                 let currentMovingShape: Shapes = {} as Shapes
 
                 // move the shape and resize the shapw
-                if (shape.type === "rect") {
-                    const dimension = rectangleDimension(shape.startX, shape.startY, shape.width, shape.height, this.clientX, this.clientY, this.actionType, { a: this.left, b: this.top })
+                if (_shape.type === "rect") {
+                    const dimension = rectangleDimension(_shape.startX, _shape.startY, _shape.width, _shape.height, this.clientX, this.clientY, this.actionType, { a: this.left, b: this.top })
                     if (!dimension) return
                     const { startX, startY, height, width, cursorType, markX, markY, markHeight, markWidth } = dimension
                     this.dCanva.style.cursor = cursorType
                     clearCanvas(this.dCtx, this.dCanva, "dymanic")
-                    rectangle(startX, startY, width, height, this.dCtx, shape.stroke, shape.strokeWidth, shape.background, "rounded")
+                    rectangle(startX, startY, width, height, this.dCtx, _shape.stroke, _shape.strokeWidth, _shape.background, "rounded")
                     currentMovingShape = {
-                        id: this.shape.id,
+                        id: shape.value.id,
                         type: "rect",
                         startX: markX,
                         startY: markY,
@@ -135,13 +138,13 @@ export class Draw {
                         strokeWidth: this.style.strokeWidth,
                     }
                 }
-                if (shape.type === "circle") {
-                    const dimension = circleDimension(shape.startX, shape.startY, shape.radiusX, shape.radiusY, this.clientX, this.clientY, this.actionType, { a: this.left, b: this.top })
+                if (_shape.type === "circle") {
+                    const dimension = circleDimension(_shape.startX, _shape.startY, _shape.radiusX, _shape.radiusY, this.clientX, this.clientY, this.actionType, { a: this.left, b: this.top })
                     if (!dimension) return
                     const { startX, startY, radiusX, radiusY, moveX, moveY, cursorType } = dimension
                     this.dCanva.style.cursor = cursorType
                     clearCanvas(this.dCtx, this.dCanva, "dymanic")
-                    circle(startX, startY, Math.abs(radiusX), Math.abs(radiusY), this.dCtx, shape.stroke, shape.strokeWidth, shape.background)
+                    circle(startX, startY, Math.abs(radiusX), Math.abs(radiusY), this.dCtx, _shape.stroke, _shape.strokeWidth, _shape.background)
                     currentMovingShape = {
                         id: this.currentShape.value.id,
                         type: "circle",
@@ -248,7 +251,7 @@ export class Draw {
             clearCanvas(this.dCtx, this.dCanva, "dymanic")
             this.dCanva.style.display = "none"
             existingShapes.forEach(x => {
-                if (x.id === this.shape.id && x.selected) {
+                if (x.id === shape.value.id && x.selected) {
                     x.display = true
                     x.selected = false
                 }
@@ -257,17 +260,19 @@ export class Draw {
             drawExistingShape(existingShapes, this.sCtx, this.style)
             isSelected.value = false
             this.actionType = "none"
+            if (!this.styleRef.current) return
+            this.styleRef.current.style.display = "none"
             return
         }
 
-        const index = existingShapes.findIndex(x => x.id === this.shape.id)
+        const index = existingShapes.findIndex(x => x.id === shape.value.id)
         existingShapes.splice(index, 1)
-        const id = this.shape.id
+        const id = shape.value.id
 
         let changeShape: Shapes = {} as Shapes
 
-        if (this.shape.type === "rect") {
-            const { startX, startY, width, height, stroke, background, strokeWidth } = this.shape
+        if (shape.value.type === "rect") {
+            const { startX, startY, width, height, stroke, background, strokeWidth } = shape.value
             const dimension = rectangleDimension(startX, startY, width, height, this.clientX, this.clientY, this.actionType, { a: this.left, b: this.top })
             if (!dimension) return
             changeShape = {
@@ -285,8 +290,8 @@ export class Draw {
             }
 
         }
-        if (this.shape.type === "circle") {
-            const { startX, startY, radiusX, radiusY, stroke, strokeWidth, background } = this.shape
+        if (shape.value.type === "circle") {
+            const { startX, startY, radiusX, radiusY, stroke, strokeWidth, background } = shape.value
 
             const dimension = circleDimension(startX, startY, radiusX, radiusY, this.clientX, this.clientY, this.actionType, { a: this.left, b: this.top })
             if (!dimension) return
@@ -305,8 +310,10 @@ export class Draw {
             }
         }
         CanvaChangeShapeUpdate(this.sCtx, this.sCanva, this.dCtx, this.dCanva, existingShapes, this.actionType, changeShape, this.style)
-        this.shape = changeShape
+        shape.value = changeShape
         this.actionType = "none"
+        if (!this.styleRef.current) return
+        this.styleRef.current.style.display = "block"
 
     }
 
@@ -318,7 +325,7 @@ export class Draw {
         this.isOnShape.value = onShape(existingShapes, clientX, clientY, this.currentShape)
         this.sCanva.style.cursor = this.isOnShape.value ? "move" : "default"
         if (isSelected.value) {
-            const x = this.shape
+            const x = shape.value
             if (x.type === "rect" && x.selected) {
                 this.actionType = onMarkedShape(x.startX, x.startY, x.width, x.height, clientX, clientY, this.sCanva)
                 return;
@@ -351,22 +358,27 @@ export class Draw {
         this.clicked = false
         if (this.isOnShape.value) {
 
-            this.shape = { ...this.currentShape.value }
-            this.shape.selected = true
+            shape.value = { ...this.currentShape.value }
+            shape.value.selected = true
             existingShapes.forEach(x => {
-                if (x.id === this.shape.id) {
+                if (x.id === shape.value.id) {
                     x.selected = true
                 }
             })
+
             isSelected.value = true
             clearCanvas(this.sCtx, this.sCanva, "static")
             drawExistingShape(existingShapes, this.sCtx, this.style)
             markSelectedShape(this.sCtx, this.currentShape.value, this.actionType)
+            if (!this.styleRef.current) return
+            this.styleRef.current.style.display = "block"
 
         } else {
             isSelected.value = false
             clearCanvas(this.sCtx, this.sCanva, "static")
             drawExistingShape(existingShapes, this.sCtx, this.style)
+            if (!this.styleRef.current) return
+            this.styleRef.current.style.display = "none"
         }
     }
 
@@ -376,24 +388,24 @@ export class Draw {
         this.clientY = e.clientY + Math.ceil(window.scrollY)
         if (isSelected.value && this.actionType !== "none") {
             if (this.actionType === "move") {
-                if (this.shape.type === "rect" || this.shape.type === "circle") {
-                    this.left = this.clientX - this.shape.startX
-                    this.top = this.clientY - this.shape.startY
+                if (shape.value.type === "rect" || shape.value.type === "circle") {
+                    this.left = this.clientX - shape.value.startX
+                    this.top = this.clientY - shape.value.startY
                 }
 
             }
             this.clicked = true
             clearCanvas(this.sCtx, this.sCanva, "static")
             existingShapes.forEach(x => {
-                if (x.id === this.shape.id && x.selected) {
+                if (x.id === shape.value.id && x.selected) {
                     x.display = false
                 }
             })
             drawExistingShape(existingShapes, this.sCtx, this.style)
             this.dCanva.style.display = "block"
             clearCanvas(this.dCtx, this.dCanva, "dymanic")
-            drawExistingShape([this.shape], this.dCtx, this.style)
-            markSelectedShape(this.dCtx, this.shape, this.actionType)
+            drawExistingShape([shape.value], this.dCtx, this.style)
+            markSelectedShape(this.dCtx, shape.value, this.actionType)
         }
 
     }
