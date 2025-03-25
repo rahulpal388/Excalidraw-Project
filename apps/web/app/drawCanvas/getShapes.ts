@@ -8,6 +8,7 @@ export interface IPencileEndDimension {
 }
 
 export type Shapes = {
+    id: number,
     type: "rect",
     startX: number,
     startY: number;
@@ -19,6 +20,7 @@ export type Shapes = {
     selected: boolean,
     display: boolean
 } | {
+    id: number,
     type: "circle",
     startX: number,
     startY: number,
@@ -30,7 +32,8 @@ export type Shapes = {
     selected: boolean,
     display: boolean
 } | {
-    type: "line",
+    id: number,
+    type: "arrow",
     startX: number,
     startY: number,
     endX: number,
@@ -40,16 +43,19 @@ export type Shapes = {
     selected: boolean,
     display: boolean
 } | {
+    id: number,
     type: "dimond",
     startX: number,
     startY: number,
-    distance: number,
+    width: number,
+    height: number,
     stroke: IColors
     background: IColors
     strokeWidth: IStyles["strokeWidth"]
     selected: boolean,
     display: boolean
 } | {
+    id: number,
     type: "text",
     top: number,
     left: number,
@@ -60,6 +66,7 @@ export type Shapes = {
     selected: boolean,
     display: boolean
 } | {
+    id: number,
     type: "pencile",
     startX: number,
     startY: number,

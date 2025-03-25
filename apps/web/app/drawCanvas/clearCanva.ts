@@ -8,7 +8,6 @@ export function clearCanvas(ctx: CanvasRenderingContext2D | null, canvas: HTMLCa
     if (!ctx) return
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.fillStyle = ctxType === "static" ? "rgba(18,18,18,1)" : "rgba(255, 255, 255, 0)"
-    // ctx.strokeStyle = "rgb(211, 211, 211)"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
 

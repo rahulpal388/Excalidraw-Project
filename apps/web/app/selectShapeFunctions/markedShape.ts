@@ -1,8 +1,9 @@
 import { CodeSquare } from "lucide-react"
 import { IActionType, IselectedShape } from "../drawCanvas/drawShape"
 import { onLineShape } from "./lineShape"
-import { isRectangleShape } from "./rectangleShape"
-
+import { isRectangleShape, onRectangleShape } from "./rectangleShape"
+import { onCircleShape } from "./circleShape"
+import { IStyles } from "../components/MainComponent"
 
 
 export function onMarkedShape(startX: number, startY: number, l1: number, l2: number, clientX: number, clientY: number, sCanva: HTMLCanvasElement): IActionType {
@@ -62,3 +63,53 @@ export function onMarkedShape(startX: number, startY: number, l1: number, l2: nu
 
     return "none"
 }
+
+
+export function onMarkedLine(startX: number, startY: number, endX: number, endY: number, clientX: number, clientY: number, sCanvas: HTMLCanvasElement, style: IStyles): IActionType {
+
+    const onLine = onLineShape(startX, startY, endX, endY, clientX, clientY)
+    console.log("inside onMarkedShape")
+    const onLeftCircle = onCircleShape({
+        id: 0,
+        type: 'circle',
+        startX,
+        startY,
+        radiusX: 5,
+        radiusY: 5,
+        stroke: style.stroke,
+        strokeWidth: 2,
+        background: style.background,
+        display: true,
+        selected: true
+    }, clientX, clientY, "inside")
+    const onRightCircle = onCircleShape({
+        id: 0,
+        type: 'circle',
+        startX: endX + 5,
+        startY: endY + 5,
+        radiusX: 5,
+        radiusY: 5,
+        stroke: style.stroke,
+        strokeWidth: 2,
+        background: style.background,
+        display: true,
+        selected: true
+    }, clientX, clientY, "inside")
+
+
+
+    if (onLine) {
+        sCanvas.style.cursor = "move"
+        return "move"
+
+    }
+
+    if (onLeftCircle || onRightCircle) {
+        sCanvas.style.cursor = "pointer"
+        return onLeftCircle ? "l-resize" : "r-resize"
+    }
+
+    return "none"
+}
+
+

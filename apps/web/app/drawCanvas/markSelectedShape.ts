@@ -18,14 +18,16 @@ export function markSelectedShape(ctx: CanvasRenderingContext2D, selectedShape: 
     if (x.type === "circle") {
         mark(x.startX - x.radiusX, x.startY - x.radiusY, 2 * x.radiusX, 2 * x.radiusY, ctx, actionType)
     }
-    // if (x.type === "dimond") {
-    //     mark(x.startX - (x.distance / 2) , x.startY , x.distance - 5, x.distance - 5, ctx, actionType)
-    // }
-    // if (x.type === "line") {
-    //     circle(x.startX, x.startY, 5, 5, ctx, "rgba(59, 130, 246, 1)", 3, "rgba(0, 0, 0, .1)")
-    //     circle((x.startX + x.endX) / 2, (x.startY + x.endY) / 2, 5, 5, ctx, "rgba(59, 130, 246, 1)", 3, "rgba(0, 0, 0, .1)")
-    //     circle(x.endX, x.endY, 5, 5, ctx, "rgba(59, 130, 246, 1)", 3, "rgba(0, 0, 0, .1)")
-    // }
+
+    if (x.type === "arrow") {
+        circle(x.startX, x.startY, 5, 5, ctx, "rgba(59, 130, 246, 1)", 1, "rgba(0, 0, 0, 0.1)")
+        // circle((x.startX + x.endX) / 2, (x.startY + x.endY) / 2, 5, 5, ctx, "rgba(59, 130, 246, 1)", 2, "rgba(0, 0, 0, 0.1)")
+        circle(x.endX + 5, x.endY + 5, 5, 5, ctx, "rgba(59, 130, 246, 1)", 1, "rgba(0, 0, 0, 0.1)")
+    }
+    if (x.type === "dimond") {
+        mark(x.startX - x.width, x.startY, x.width - 5, x.height - 5, ctx, actionType)
+    }
+
     // if (x.type === "text") {
     //     // we have to make the height dynamic depending upon the text
     //     mark(x.left - 10, x.top - 15, x.width + 14, 23, ctx, actionType)

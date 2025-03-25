@@ -1,13 +1,13 @@
 import { clearCanvas } from "../drawCanvas/clearCanva";
 import { drawExistingShape } from "../drawCanvas/drawExistingShape";
-import { IselectedShape } from "../drawCanvas/drawShape";
 import { Shapes } from "../drawCanvas/getShapes";
 import { IStyles } from "../components/MainComponent";
 import { markSelectedShape } from "../drawCanvas/markSelectedShape";
+import { IActionType } from "../drawCanvas/classDrawShape";
 
 
 // first time when shape is drawn
-export function CanvaShapeUpdate(sCtx: CanvasRenderingContext2D, sCanvas: HTMLCanvasElement, dCtx: CanvasRenderingContext2D, dCanvas: HTMLCanvasElement, socket: WebSocket, existingShapes: Shapes[], shape: Shapes, selectedShape: IselectedShape, Style: IStyles) {
+export function CanvaShapeUpdate(sCtx: CanvasRenderingContext2D, sCanvas: HTMLCanvasElement, dCtx: CanvasRenderingContext2D, dCanvas: HTMLCanvasElement, socket: WebSocket, existingShapes: Shapes[], Style: IStyles, shape: Shapes) {
     existingShapes.push(shape)
     clearCanvas(dCtx, dCanvas, "dymanic")
     clearCanvas(sCtx, sCanvas, "static")
@@ -15,16 +15,12 @@ export function CanvaShapeUpdate(sCtx: CanvasRenderingContext2D, sCanvas: HTMLCa
 }
 
 // when the shape is resize or move
-export function CanvaChangeShapeUpdate(sCtx: CanvasRenderingContext2D, sCanvas: HTMLCanvasElement, dCtx: CanvasRenderingContext2D, dCanvas: HTMLCanvasElement, existingShapes: Shapes[], shapeChange: IselectedShape, shape: Shapes, Style: IStyles) {
-
-
+export function CanvaChangeShapeUpdate(sCtx: CanvasRenderingContext2D, sCanvas: HTMLCanvasElement, dCtx: CanvasRenderingContext2D, dCanvas: HTMLCanvasElement, existingShapes: Shapes[], actionType: IActionType, shape: Shapes, Style: IStyles) {
     existingShapes.push(shape)
     clearCanvas(sCtx, sCanvas, "static")
     clearCanvas(dCtx, dCanvas, "dymanic")
+    dCanvas.style.display = "none"
     drawExistingShape(existingShapes, sCtx, Style)
-    const index = existingShapes.findIndex(x => x === shapeChange.currentSelectedShape)
-    existingShapes.splice(index, 1)
-    shapeChange.actionType = "none"
-    shapeChange.currentSelectedShape = shape
-    markSelectedShape(sCtx, shape, shapeChange.actionType)
+    actionType = "none"
+    markSelectedShape(sCtx, shape, actionType)
 }

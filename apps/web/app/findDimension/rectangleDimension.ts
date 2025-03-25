@@ -15,10 +15,11 @@ export function rectangleDimension(startX: number, startY: number, width: number
     cursorType: "ew-resize" | "ns-resize" | "move" | "nesw-resize" | "nwse-resize"
 } | null {
 
-
+    // console.log(startX, startY, width, height, clientX, clientY, distanceMoveClick.a, distanceMoveClick.b)
     if (where === "l-resize" || where === "r-resize") {
         const startX1 = where === "l-resize" ? startX + width : startX
         const w = clientX - startX1
+        console.log(`width is ${w}`)
         const x = w > 0 ? startX1 : startX1 - Math.abs(w)
         return {
             startX: x,
@@ -62,6 +63,11 @@ export function rectangleDimension(startX: number, startY: number, width: number
         const sy = where === "t-cl-resize" || where === "t-cr-resize" ? (startY + height) : startY
         const w = clientX - sx
         const h = clientY - sy
+
+        // console.log(`clientX is ${clientX}`)
+        // console.log(where)
+        // console.log(`sx is ${sx}`)
+        // console.log(`width is ${w}`)
         const markX = w <= 0 ? sx - Math.abs(w) : sx
         const markY = h <= 0 ? sy - Math.abs(h) : sy
         const x = w <= 0 ? sx - Math.abs(w) : sx
@@ -108,8 +114,8 @@ export function rectangleDimension(startX: number, startY: number, width: number
     // }
 
     if (where === "move") {
-        const startX = clientX - distanceMoveClick.b
-        const startY = clientY - distanceMoveClick.a
+        const startX = clientX - distanceMoveClick.a
+        const startY = clientY - distanceMoveClick.b
         return {
             startX,
             startY,

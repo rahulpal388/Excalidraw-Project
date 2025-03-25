@@ -14,12 +14,12 @@ export function circleDimension(startX: number, startY: number, radiusX: number,
 
     if (where === "move") {
         return {
-            startX: clientX - distanceMoveClick.b,
-            startY: clientY - distanceMoveClick.a,
+            startX: clientX - distanceMoveClick.a,
+            startY: clientY - distanceMoveClick.b,
             radiusX,
             radiusY,
-            moveX: clientX - distanceMoveClick.b,
-            moveY: clientY - distanceMoveClick.a,
+            moveX: clientX - distanceMoveClick.a,
+            moveY: clientY - distanceMoveClick.b,
             cursorType: "move"
         }
     }
