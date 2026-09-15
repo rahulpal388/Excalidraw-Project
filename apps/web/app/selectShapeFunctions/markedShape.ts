@@ -1,9 +1,9 @@
 import { CodeSquare } from "lucide-react"
-import { IActionType, IselectedShape } from "../drawCanvas/drawShape"
 import { onLineShape } from "./lineShape"
 import { isRectangleShape, onRectangleShape } from "./rectangleShape"
 import { onCircleShape } from "./circleShape"
 import { IStyles } from "../components/MainComponent"
+import { IActionType } from "../drawCanvas/classDrawShape"
 
 
 export function onMarkedShape(startX: number, startY: number, l1: number, l2: number, clientX: number, clientY: number, sCanva: HTMLCanvasElement): IActionType {
@@ -68,7 +68,7 @@ export function onMarkedShape(startX: number, startY: number, l1: number, l2: nu
 export function onMarkedLine(startX: number, startY: number, endX: number, endY: number, clientX: number, clientY: number, sCanvas: HTMLCanvasElement, style: IStyles): IActionType {
 
     const onLine = onLineShape(startX, startY, endX, endY, clientX, clientY)
-    console.log("inside onMarkedShape")
+
     const onLeftCircle = onCircleShape({
         id: 0,
         type: 'circle',
@@ -105,6 +105,7 @@ export function onMarkedLine(startX: number, startY: number, endX: number, endY:
     }
 
     if (onLeftCircle || onRightCircle) {
+
         sCanvas.style.cursor = "pointer"
         return onLeftCircle ? "l-resize" : "r-resize"
     }

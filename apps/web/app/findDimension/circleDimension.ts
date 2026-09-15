@@ -1,4 +1,4 @@
-import { IActionType } from "../drawCanvas/drawShape";
+import { IActionType } from "../drawCanvas/classDrawShape";
 
 
 
@@ -80,26 +80,6 @@ export function circleDimension(startX: number, startY: number, radiusX: number,
 
 
     }
-
-    // if (where === "b-cl-resize") {
-
-    //     const x = startX + (radiusX)
-    //     const y = startY - (radiusY)
-    //     const radius_X = (clientX - x) / 2
-    //     const radius_Y = (clientY - y) / 2
-    //     const sx = radius_X <= 0 ? x - Math.abs(radius_X) : x + Math.abs(radius_X)
-    //     const sy = radius_Y <= 0 ? y - Math.abs(radius_Y) : y + Math.abs(radius_Y)
-    //     return {
-    //         startX: Math.abs(sx),
-    //         startY: Math.abs(sy),
-    //         radiusX: Math.abs(radius_X),
-    //         radiusY: Math.abs(radius_Y),
-    //         moveX: sx,
-    //         moveY: sy,
-    //         cursorType: "nesw-resize"
-    //     }
-    // }
-
 
     return null
 

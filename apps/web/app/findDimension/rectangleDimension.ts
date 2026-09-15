@@ -1,4 +1,4 @@
-import { IActionType } from "../drawCanvas/drawShape"
+import { IActionType } from "../drawCanvas/classDrawShape"
 
 
 export function rectangleDimension(startX: number, startY: number, width: number, height: number, clientX: number, clientY: number, where: IActionType, distanceMoveClick: { a: number, b: number }): {
@@ -21,6 +21,7 @@ export function rectangleDimension(startX: number, startY: number, width: number
         const w = clientX - startX1
         console.log(`width is ${w}`)
         const x = w > 0 ? startX1 : startX1 - Math.abs(w)
+        console.log(`the heigth is ${height}`)
         return {
             startX: x,
             startY: startY,
@@ -64,10 +65,11 @@ export function rectangleDimension(startX: number, startY: number, width: number
         const w = clientX - sx
         const h = clientY - sy
 
-        // console.log(`clientX is ${clientX}`)
-        // console.log(where)
-        // console.log(`sx is ${sx}`)
-        // console.log(`width is ${w}`)
+        console.log(`clientY is  ${clientY}`)
+        console.log(`height is  ${height}`)
+
+        console.log(`startY is ${sy}`)
+
         const markX = w <= 0 ? sx - Math.abs(w) : sx
         const markY = h <= 0 ? sy - Math.abs(h) : sy
         const x = w <= 0 ? sx - Math.abs(w) : sx

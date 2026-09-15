@@ -10,6 +10,7 @@ export function onDimondShape(shape: Shapes, clientX: number, clientY: number, w
 
         const onDimond = where === "both" ? inDimond && outDimond : where === "inside" ? inDimond : outDimond
         if (onDimond) {
+            console.log("on the dimond shape")
             return true
         }
     }

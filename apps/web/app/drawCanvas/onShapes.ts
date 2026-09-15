@@ -35,6 +35,7 @@ export function onShape(existingShapes: Shapes[], clientX: number, clientY: numb
         if (x.type === "dimond") {
             const onDimond = onDimondShape(x, clientX, clientY, "both")
             if (onDimond) {
+                currentShape.value = { ...x }
                 return true
             }
 

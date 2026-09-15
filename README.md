@@ -1,58 +1,42 @@
-# Turborepo Tailwind CSS starter
+# Excalidraw Clone
 
-This Turborepo starter is maintained by the Turborepo core team.
+A simple drawing application inspired by Excalidraw, built as a small project to practice frontend development and working with the canvas.
 
-## Using this example
+## 🎥 Demo
 
-Run the following command:
+A short demo of what I have built:
 
-```sh
-npx create-turbo@latest -e with-tailwind
+<video src="./assests/excaliDraw_video.mp4" controls autoplay loop   muted   playsinline
+  controls width="800"></video>
+
+## 🛠️ Tech Stack
+
+- React
+- TypeScript
+- HTML Canvas
+- CSS
+
+## ✨ What I Built
+
+- Basic drawing canvas
+- Drawing elements
+- Selecting elements
+- Moving elements
+- Basic canvas interactions
+
+## 📌 About
+
+This is a small project that I built while learning and experimenting with canvas-based applications.
+
+It is **not a complete Excalidraw implementation** and only contains a small set of the functionality.
+
+## 🚀 Running Locally
+
+```bash
+npm install
+npm run dev
 ```
 
-## What's inside?
+## 👨‍💻 Author
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `web`: another [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Building packages/ui
-
-This example is set up to produce compiled styles for `ui` components into the `dist` directory. The component `.tsx` files are consumed by the Next.js apps directly using `transpilePackages` in `next.config.js`. This was chosen for several reasons:
-
-- Make sharing one `tailwind.config.js` to apps and packages as easy as possible.
-- Make package compilation simple by only depending on the Next.js Compiler and `tailwindcss`.
-- Ensure Tailwind classes do not overwrite each other. The `ui` package uses a `ui-` prefix for it's classes.
-- Maintain clear package export boundaries.
-
-Another option is to consume `packages/ui` directly from source without building. If using this option, you will need to update the `tailwind.config.js` in your apps to be aware of your package locations, so it can find all usages of the `tailwindcss` class names for CSS compilation.
-
-For example, in [tailwind.config.js](packages/tailwind-config/tailwind.config.js):
-
-```js
-  content: [
-    // app content
-    `src/**/*.{js,ts,jsx,tsx}`,
-    // include packages if not transpiling
-    "../../packages/ui/*.{js,ts,jsx,tsx}",
-  ],
-```
-
-If you choose this strategy, you can remove the `tailwindcss` and `autoprefixer` dependencies from the `ui` package.
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [Tailwind CSS](https://tailwindcss.com/) for styles
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+**Rahul Pal**

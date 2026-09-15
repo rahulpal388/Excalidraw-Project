@@ -1,4 +1,4 @@
-import { IActionType } from "../drawCanvas/drawShape";
+import { IActionType } from "../drawCanvas/classDrawShape";
 
 
 // height need to be dynamic ====> remaining

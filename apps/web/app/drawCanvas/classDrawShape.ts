@@ -12,10 +12,12 @@ import { rectangleDimension } from "../findDimension/rectangleDimension";
 import { circleDimension } from "../findDimension/circleDimension";
 import { dimond } from "../drawShape/dimond";
 import { Shapes } from "./getShapes";
+import { arrowDimension } from "../findDimension/arrowDimension";
 
 // when you are clearning the canva you can specify the height and width so, it good to not clear the whole canva only the visual part is enough and it also get grids of the drawing of the shape that are not visiual on the sereen #fix it 
 
 // move IAction name to IShape
+// after selcting the shape it does don't moving when i move th mouse little bit it working fix it
 
 
 export type IActionType = "move" | "l-resize" | "r-resize" | "t-resize" | "b-resize" | "none" | "t-cl-resize" | "t-cr-resize" | "b-cl-resize" | "b-cr-resize" | "rotate"
@@ -53,6 +55,7 @@ export class Draw {
     moveY = 0
     top = 0
     left = 0
+    isDisplay = false
 
 
 
@@ -159,6 +162,14 @@ export class Draw {
                         strokeWidth: this.style.strokeWidth,
                     }
                 }
+                // if (_shape.type === "arrow") {
+                //     const dimension = arrowDimension(_shape.startX, _shape.startY, _shape.endX, _shape.endY, this.clientX, this.clientY, this.actionType, { a: this.left, b: this.top })
+                //     console.log("moving the arrow")
+                //     if (!dimension) return
+                //     this.dCanva.style.cursor = dimension.cursorType
+                //     clearCanvas(this.dCtx, this.dCanva, "dymanic")
+                //     arrow(dimension.startX, dimension.startY, dimension.endX, dimension.endY, this.style.stroke, this.style.strokeWidth, this.dCtx)
+                // }
                 markSelectedShape(this.dCtx, currentMovingShape, this.actionType)
             }
 
@@ -273,8 +284,11 @@ export class Draw {
 
         if (shape.value.type === "rect") {
             const { startX, startY, width, height, stroke, background, strokeWidth } = shape.value
+            console.log(`mouse up happen `)
             const dimension = rectangleDimension(startX, startY, width, height, this.clientX, this.clientY, this.actionType, { a: this.left, b: this.top })
             if (!dimension) return
+            console.log(dimension)
+            if (startX === this.clientX || startY === this.clientY) return
             changeShape = {
                 id,
                 type: "rect",
@@ -289,12 +303,16 @@ export class Draw {
                 display: true
             }
 
+
         }
         if (shape.value.type === "circle") {
             const { startX, startY, radiusX, radiusY, stroke, strokeWidth, background } = shape.value
 
             const dimension = circleDimension(startX, startY, radiusX, radiusY, this.clientX, this.clientY, this.actionType, { a: this.left, b: this.top })
             if (!dimension) return
+            console.log(dimension)
+            console.log(this.clientX)
+            if (dimension.startX === this.clientX || dimension.startY === this.clientY) return
             changeShape = {
                 id,
                 type: "circle",
@@ -309,9 +327,31 @@ export class Draw {
                 display: true
             }
         }
+        if (shape.value.type === "arrow") {
+            const { startX, startY, endX, endY, stroke, strokeWidth } = shape.value
+            console.log(shape.value)
+            const dimension = arrowDimension(startX, startY, endX, endY, this.clientX, this.clientY, this.actionType, { a: this.left, b: this.top })
+            console.log("moving the arrow")
+            if (!dimension) return
+            if (startX === this.clientX || startY === this.clientY) return
+            changeShape = {
+                id,
+                type: "arrow",
+                startX: dimension.startX,
+                startY: dimension.startY,
+                endX: dimension.endX,
+                endY: dimension.endY,
+                stroke,
+                strokeWidth,
+                selected: true,
+                display: true
+            }
+        }
+
         CanvaChangeShapeUpdate(this.sCtx, this.sCanva, this.dCtx, this.dCanva, existingShapes, this.actionType, changeShape, this.style)
-        shape.value = changeShape
         this.actionType = "none"
+        shape.value = changeShape
+        console.log(shape.value)
         if (!this.styleRef.current) return
         this.styleRef.current.style.display = "block"
 
@@ -337,6 +377,7 @@ export class Draw {
             }
             if (x.type === "dimond" && x.selected) {
                 this.actionType = onMarkedShape(x.startX - this.width, x.startY, x.width * 2, x.height * 2, clientX, clientY, this.sCanva)
+
                 return;
             }
 
@@ -388,7 +429,7 @@ export class Draw {
         this.clientY = e.clientY + Math.ceil(window.scrollY)
         if (isSelected.value && this.actionType !== "none") {
             if (this.actionType === "move") {
-                if (shape.value.type === "rect" || shape.value.type === "circle") {
+                if (shape.value.type === "rect" || shape.value.type === "circle" || shape.value.type === "arrow") {
                     this.left = this.clientX - shape.value.startX
                     this.top = this.clientY - shape.value.startY
                 }
@@ -396,6 +437,7 @@ export class Draw {
             }
             this.clicked = true
             clearCanvas(this.sCtx, this.sCanva, "static")
+            this.isDisplay = true
             existingShapes.forEach(x => {
                 if (x.id === shape.value.id && x.selected) {
                     x.display = false

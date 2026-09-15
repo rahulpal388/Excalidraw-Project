@@ -2,7 +2,7 @@
 import { circle } from "../drawShape/circle";
 import { line } from "../drawShape/line";
 import { rectangle } from "../drawShape/rectangle";
-import { IActionType } from "./drawShape";
+import { IActionType } from "./classDrawShape";
 import { Shapes } from "./getShapes";
 
 
@@ -22,7 +22,7 @@ export function markSelectedShape(ctx: CanvasRenderingContext2D, selectedShape: 
     if (x.type === "arrow") {
         circle(x.startX, x.startY, 5, 5, ctx, "rgba(59, 130, 246, 1)", 1, "rgba(0, 0, 0, 0.1)")
         // circle((x.startX + x.endX) / 2, (x.startY + x.endY) / 2, 5, 5, ctx, "rgba(59, 130, 246, 1)", 2, "rgba(0, 0, 0, 0.1)")
-        circle(x.endX + 5, x.endY + 5, 5, 5, ctx, "rgba(59, 130, 246, 1)", 1, "rgba(0, 0, 0, 0.1)")
+        circle(x.endX, x.endY, 5, 5, ctx, "rgba(59, 130, 246, 1)", 1, "rgba(0, 0, 0, 0.1)")
     }
     if (x.type === "dimond") {
         mark(x.startX - x.width, x.startY, x.width - 5, x.height - 5, ctx, actionType)

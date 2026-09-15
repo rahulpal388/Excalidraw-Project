@@ -60,9 +60,9 @@ export function MainCanva({ roomId, socket }: {
             dCtx.current = dCanva.current.getContext("2d")
             if (!dCtx.current) return
             if (!sCtx.current) return
-            sCtx.current.fillStyle = "rgba(18,18,18,1)"
-            dCtx.current.fillStyle = "rgba(255, 255, 255, 0)"
             const drawObj = new Draw(sCanva.current, dCanva.current, sCtx.current, dCtx.current, action.current, Style.current, setSelectedTool, socket, styleRef)
+            // sCtx.current.fillStyle = "rgba(18,18,18,1)"
+            // dCtx.current.fillStyle = "rgba(255, 255, 255, 0)"
 
         }
 
@@ -82,6 +82,7 @@ export function MainCanva({ roomId, socket }: {
         dynamicCanvaRef.current.style.display = selectedTool.type === "pointer" ? "none" : "block"
         styleRef.current.style.display = selectedTool.type === "pointer" ? "none" : "block"
     }, [selectedTool])
+
 
 
     useEffect(() => {
