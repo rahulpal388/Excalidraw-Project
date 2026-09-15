@@ -6,7 +6,7 @@ A simple drawing application inspired by Excalidraw, built as a small project to
 
 A short demo of what I have built:
 
-https://github.com/user-attachments/assets/597d5093-f6ad-469c-af3c-f4870a582fcc
+<video src="https://github.com/user-attachments/assets/597d5093-f6ad-469c-af3c-f4870a582fcc" controls autoplay loop muted playsinline width="800"></video>
 
 ## 🛠️ Tech Stack
 
